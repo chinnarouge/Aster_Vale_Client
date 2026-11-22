@@ -1,84 +1,80 @@
 as_of: "2026-11-01"
 
 cases:
-  - id: c1_risk
-    client: "C001"
-    trigger: at_risk
-    context: "Usage feels down"
-    expect:
-      client_id: C001
-      client_name: Halden Bet
-    facts:
-      total_arr: 752000
-      contract_end: "2027-01-31"
-      notice_deadline: "2026-12-02"
-      days_until_notice: 31
-      auto_renew: "Y"
-      open_tickets: 2
-      avg_csat: 2.22
-      total_tickets_current: 12
-      ticket_change_pct: 500.0
-      renewal_opp_amount: 541500
-      arr_vs_pipeline_gap: 210500
-      segment: Sportsbook
-
-  - id: c1_renew
-    client: "Halden Bet"
+  - id: c2_renewal
+    client: "Corvane Media"
     trigger: renewal
     expect:
-      client_id: C001
-      client_name: Halden Bet
+      client_id: C002
+      client_name: Corvane Media
     facts:
-      total_arr: 752000
-      contract_end: "2027-01-31"
-      notice_deadline: "2026-12-02"
-      days_until_notice: 31
-      auto_renew: "Y"
-      renewal_opp_amount: 541500
-      avg_csat: 2.22
+      total_arr: 351000
+      contract_end: "2027-05-31"
+      notice_deadline: "2027-03-02"
+      days_until_notice: 121
+      auto_renew: "N"
+      avg_csat: 4.55
+      total_tickets: 13
+      segment: Broadcaster
 
-  - id: c3_upsell
-    client: "Brenmoor"
+  - id: c2_upsell
+    client: "C002"
     trigger: upsell
     expect:
-      client_id: C003
-      client_name: Brenmoor League
+      client_id: C002
+      client_name: Corvane Media
     facts:
-      total_arr: 235000
-      segment: "League/Federation"
-      contract_end: "2026-12-31"
-      notice_deadline: "2026-10-02"
-      auto_renew: "N"
+      total_arr: 351000
+      segment: Broadcaster
+      tier: Strategic
+      products_held: 3
 
-  - id: c3_meeting
-    client: "C003"
-    trigger: meeting_prep
-    expect:
-      client_id: C003
-      client_name: Brenmoor League
-    facts:
-      total_arr: 235000
-      segment: "League/Federation"
-      meeting_note_count: 2
-
-  - id: c4_risk
-    client: "C004"
+  - id: c9_at_risk
+    client: "Pellucid Odds"
     trigger: at_risk
     expect:
-      client_id: C004
-      client_name: Quillon Esports
+      client_id: C009
+      client_name: Pellucid Odds
     facts:
-      total_arr: 48000
-      segment: "Fantasy & Gaming"
+      total_arr: 564000
+      contract_end: "2027-12-31"
+      notice_deadline: "2027-10-02"
+      days_until_notice: 335
+      auto_renew: "Y"
+      avg_csat: 4.33
+      open_opp_amount: 120000
+      segment: Sportsbook
+
+  - id: c9_meeting
+    client: "C009"
+    trigger: meeting_prep
+    expect:
+      client_id: C009
+      client_name: Pellucid Odds
+    facts:
+      total_arr: 564000
+      segment: Sportsbook
+      meeting_note_count: 1
+
+  - id: c17_at_risk
+    client: "Wexley Athletic FC"
+    trigger: at_risk
+    expect:
+      client_id: C017
+      client_name: Wexley Athletic FC
+    facts:
+      total_arr: 40500
+      avg_csat: 4.0
+      segment: Club
       tier: Growth
 
-  - id: c4_renew
-    client: "Quillon Esports"
-    trigger: renewal
+  - id: c17_meeting
+    client: "C017"
+    trigger: meeting_prep
     expect:
-      client_id: C004
-      client_name: Quillon Esports
+      client_id: C017
+      client_name: Wexley Athletic FC
     facts:
-      total_arr: 48000
-      segment: "Fantasy & Gaming"
-      contract_end: "2027-08-31"
+      total_arr: 40500
+      segment: Club
+      meeting_note_count: 0

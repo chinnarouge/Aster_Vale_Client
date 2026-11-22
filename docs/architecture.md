@@ -6,7 +6,7 @@ The agent takes a client (name or ID), a trigger (renewal, upsell, meeting_prep,
 
 Two front doors: CLI (`main.py`) and Streamlit UI (`app.py`). Both run the same pipeline. Neither holds logic of its own.
 
-Three LLM calls max. Everything else is Python.
+Three LLM calls normally, up to 5 if the judge triggers a retry. Everything else is Python. All prompts live in `prompts.py`.
 
 ## Data flow
 
@@ -58,6 +58,11 @@ CLI input (client, trigger, context)   or   Streamlit UI form
     v
 10. judge (LLM call 3)
     |   scores: completeness, accuracy, actionability, data_transparency (1-5)
+    |   if any dimension < 3:
+    |       -> retry writer with judge feedback (LLM call 4)
+    |       -> re-verify, re-render
+    |       -> re-judge (LLM call 5)
+    |   one retry max
     |   saves scores.json
     v
 11. trace  ---- saves trace.json with step timings, token counts, costs
@@ -74,7 +79,7 @@ CLI input (client, trigger, context)   or   Streamlit UI form
 | Writing claims | Yes | Prose and emphasis. Forbidden from introducing numbers not in tool output. |
 | Verification | No | Exact numeric matching and citation resolution. Python because LLMs cannot reliably compare 752,000 vs 751,000. |
 | Rendering | No | Template-based markdown generation from verified claims. |
-| Judging | Yes | Subjective quality scoring. Runs every time. |
+| Judging | Yes | Subjective quality scoring. Runs every time. Triggers one writer retry if any dimension < 3. |
 
 ## The 10 tools
 
@@ -114,9 +119,9 @@ This makes verification structural. An uncited claim is unrepresentable in the s
 These are different things solving different problems:
 
 - **Verifier** (Python, mandatory): checks if the facts are correct. Do the cited row IDs exist? Do the numbers match the source data exactly? Categorizes failures: `llm_computed` (correct math but LLM did it), `hallucinated` (number not in any tool data), `missing_citation` (row ID doesn't exist), `missing_source` (source tool not run). Binary pass/fail per claim, with a reason on failure.
-- **Judge** (LLM, mandatory): checks if the briefing is useful. Scores completeness, accuracy, actionability, data transparency on a 1-5 scale. Subjective quality assessment.
+- **Judge** (LLM, mandatory): checks if the briefing is useful. Scores completeness, accuracy, actionability, data transparency on a 1-5 scale. If any dimension scores below 3, the judge feeds its critique back to the writer for one retry. The retry re-verifies and re-renders before re-judging.
 
-Both run every time. The verifier catches wrong numbers, the judge catches weak analysis.
+Both run every time. The verifier catches wrong numbers, the judge catches weak analysis and can trigger a corrective retry.
 
 ## Writer input summarization
 
@@ -133,7 +138,9 @@ The verifier still checks against full tool data, not summaries.
 
 Tools compute derived values so the writer can cite them instead of calculating:
 
+- `days_to_end`: integer days from as_of to contract end date (get_contract_status)
 - `days_until_notice`: integer days from as_of to notice deadline (get_contract_status)
+- `tenure_years`: years since customer_since date (get_client_profile)
 - `ticket_change_abs`: current minus previous period ticket count (get_support_summary)
 - `csat_change`: current minus previous period CSAT (get_support_summary)
 - `current_arr_eur` and `arr_vs_pipeline_gap`: ARR minus pipeline total (get_opportunities)
@@ -174,8 +181,8 @@ Both call the same functions in the same order. Neither holds business logic. Th
 ## Key design decisions
 
 1. **Hybrid architecture over multi-agent**: LLM plans + writes, Python calculates + verifies. Simpler than a multi-agent framework, same accuracy, fewer failure modes.
-2. **No langchain/langgraph**: The chain is linear (plan > run tools > write > verify > render). No loops, no retries, no routing. The anthropic SDK handles the LLM calls directly.
-3. **Free-flow planner**: The planner sees tool descriptions and reasons about which tools matter for the trigger. No hardcoded per-trigger tool lists. Generalizes to unknown triggers without code changes.
+2. **No langchain/langgraph**: The chain is linear (plan > tools > write > verify > render > judge), with one conditional retry. The anthropic SDK handles the LLM calls directly.
+3. **Free-flow planner**: The planner sees tool descriptions and trigger definitions (from config) and reasons about which tools matter. No hardcoded per-trigger tool lists. Generalizes to unknown triggers without code changes.
 4. **Structured claims over prose**: Writer outputs JSON claims, not markdown. Makes verification mechanical instead of heuristic.
 5. **Flag over remove**: Failed verification marks claims [UNVERIFIED] instead of silently dropping them. Removal hides model failures from the rep.
 6. **as_of date, not wall clock**: Every date calculation uses 2026-11-01, never datetime.now(). Makes output deterministic.
@@ -183,11 +190,31 @@ Both call the same functions in the same order. Neither holds business logic. Th
 8. **Computed fields in tools**: Tools pre-compute derived values (days_until_notice, arr_vs_pipeline_gap, etc.) so the writer cites them instead of calculating. Reduces UNVERIFIED flags without weakening the verifier.
 9. **Writer sees summaries, verifier sees full data**: Summarization reduces writer input tokens by ~80%. The verifier always checks against the original tool output.
 
-## Evaluation
+## Testing
 
-6 cases across 3 clients and 2 triggers each. Two layers:
+Three layers, cheapest first. The eval runner (`run_eval.py`) executes all three in order and stops on failure.
 
-- **Layer 1 (free)**: 33 expected facts from eval/cases.yaml checked against tool outputs. No LLM calls. Catches tool regressions.
-- **Layer 2 (costs money)**: Full pipeline per case. Ungrounded number check scans rendered briefing for numbers absent from all tool data. Report written to eval/report.md.
+### Unit tests (layer 0, free, <1s)
+
+27 pytest tests in `tests/test_tools.py` covering all 10 tools across 4 data shapes:
+
+| Shape | Clients | What it tests |
+|-------|---------|---------------|
+| Normal | C002 | Full data, correct values, all fields populated |
+| Empty | C004, C007 | No tickets, no contracts, no notes — CSAT=None not 0, ARR=None not 0 |
+| Short history | C004 | 2 months of usage — YoY=None not 0, short_history flagged |
+| Duplicate rows | C006, C010 | Known duplicates (K-0010, T-0281) — appear once after dedup |
+
+Plus a determinism test: same tool called twice produces identical output.
+
+Run standalone: `uv run python -m pytest tests/test_tools.py -v`
+
+### Eval layer 1 (free, no LLM)
+
+30 expected facts from `eval/cases.yaml` checked against actual tool outputs. 6 cases across 3 clients (C002, C009, C017) and all 4 triggers. Catches tool regressions without spending tokens.
+
+### Eval layer 2 (costs money)
+
+Full pipeline per case. Ungrounded number check scans rendered briefing for numbers absent from all tool data. Report written to `eval/report.md`.
 
 Run with `uv run eval/run_eval.py --full --report`.

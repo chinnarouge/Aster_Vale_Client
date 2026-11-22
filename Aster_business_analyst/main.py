@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sys
 import time
 
@@ -15,6 +16,9 @@ from agent import (
     render_briefing,
     save_evidence,
     judge,
+    rewrite_claims,
+    judge_needs_retry,  # noqa: F401
+    judge_feedback,  # noqa: F401
     llm_call_log,
 )
 
@@ -101,14 +105,6 @@ def main():
 
     t0 = time.time()
     briefing = render_briefing(verified, client_data, args.trigger, tool_results)
-    run_dir = os.path.join(args.output_dir, f"{client_id}_{args.trigger}")
-    os.makedirs(run_dir, exist_ok=True)
-    briefing_path = os.path.join(run_dir, "briefing.md")
-    with open(briefing_path, "w") as f:
-        f.write(briefing)
-    print(f"\nBriefing saved to {briefing_path}")
-    evidence_path = save_evidence(tool_results, verified, run_dir)
-    print(f"Evidence saved to {evidence_path}")
     steps.append(("render", time.time() - t0, None))
 
     t0 = time.time()
@@ -121,14 +117,66 @@ def main():
         indent=2,
     )
     scores = judge(briefing, args.trigger, evidence_summary)
+    overall = scores.get("overall", "?")
+    steps.append(("judge", time.time() - t0, f"overall: {overall}/5"))
+
+    retried = False
+    if judge_needs_retry(scores):
+        feedback = judge_feedback(scores)
+        print("\nJudge scored below threshold, retrying writer...")
+        print(f"Feedback: {feedback[:200]}")
+
+        t0 = time.time()
+        retry_claims = rewrite_claims(
+            args.trigger, client_data, tool_results, args.context, feedback
+        )
+        if retry_claims:
+            steps.append(
+                ("write_retry", time.time() - t0, f"{len(retry_claims)} claims")
+            )
+            t0 = time.time()
+            verified = verify_claims(retry_claims, tool_results)
+            passed = sum(1 for c in verified if c["verification"] == "passed")
+            flagged = sum(1 for c in verified if c["verification"] == "flagged")
+            print(f"Retry verified: {passed} passed, {flagged} flagged")
+            steps.append(
+                (
+                    "verify_retry",
+                    time.time() - t0,
+                    f"{passed} passed, {flagged} flagged",
+                )
+            )
+            t0 = time.time()
+            briefing = render_briefing(
+                verified, client_data, args.trigger, tool_results
+            )
+            steps.append(("render_retry", time.time() - t0, None))
+
+            t0 = time.time()
+            scores = judge(briefing, args.trigger, evidence_summary)
+            overall = scores.get("overall", "?")
+            steps.append(("judge_retry", time.time() - t0, f"overall: {overall}/5"))
+            retried = True
+            print(f"Retry score: {overall}/5")
+        else:
+            print("Retry failed to produce valid claims, keeping original.")
+
+    safe_trigger = re.sub(r"[^A-Za-z0-9_-]", "_", args.trigger)
+    run_dir = os.path.join(args.output_dir, f"{client_id}_{safe_trigger}")
+    os.makedirs(run_dir, exist_ok=True)
+    briefing_path = os.path.join(run_dir, "briefing.md")
+    with open(briefing_path, "w") as f:
+        f.write(briefing)
+    print(f"\nBriefing saved to {briefing_path}")
+    evidence_path = save_evidence(tool_results, verified, run_dir)
+    print(f"Evidence saved to {evidence_path}")
     scores_path = os.path.join(run_dir, "scores.json")
     with open(scores_path, "w") as f:
         json.dump(scores, f, indent=2)
     print(f"Scores saved to {scores_path}")
-    overall = scores.get("overall", "?")
-    steps.append(("judge", time.time() - t0, f"overall: {overall}/5"))
 
     total_elapsed = time.time() - pipeline_start
+    llm_count = len(llm_call_log)
 
     print("\n" + "=" * 60)
     print("TRACE SUMMARY")
@@ -136,13 +184,14 @@ def main():
     for name, elapsed, detail in steps:
         detail_str = f" ({detail})" if detail else ""
         logger.info(f"[STEP] {name:<10} | {elapsed:.2f}s{detail_str}")
-    logger.info(f"[TOTAL] {total_elapsed:.2f}s | 3 LLM calls")
+    logger.info(f"[TOTAL] {total_elapsed:.2f}s | {llm_count} LLM calls")
     if "overall" in scores:
         print(f"\nOverall score: {scores['overall']}/5")
     if "summary" in scores:
         print(f"Summary: {scores['summary']}")
+    if retried:
+        print("(Briefing was retried after judge feedback)")
 
-    # Save trace to run directory
     trace = {
         "client_id": client_id,
         "trigger": args.trigger,
@@ -155,6 +204,7 @@ def main():
         "claims_passed": passed,
         "claims_flagged": flagged,
         "judge_overall": overall,
+        "retried": retried,
     }
     trace_path = os.path.join(run_dir, "trace.json")
     with open(trace_path, "w") as f:

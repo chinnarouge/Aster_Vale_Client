@@ -141,10 +141,14 @@ def get_client_profile(client_id):
             "data": None,
             "row_ids": [],
         }
+    data = dict(rows[0])
+    start = _parse_date(data.get("customer_since"))
+    if start:
+        data["tenure_years"] = round((_parse_date(AS_OF) - start).days / 365.25, 1)
     return {
         "tool": "get_client_profile",
         "client_id": client_id,
-        "data": dict(rows[0]),
+        "data": data,
         "row_ids": [client_id],
     }
 

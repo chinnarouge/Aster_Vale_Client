@@ -290,11 +290,6 @@ Outputs structured JSON claims, not markdown prose. Each claim has section, stat
 - Layer 1 passes: all 33 facts match across 6 cases
 - Added pyyaml to dependencies
 
-### README.md
-
-- Covers: quick start, pipeline walkthrough, where the model is/isn't, verification design, data handling, eval suite, known limitations, what I'd do next, how I built it
-- Written for the submission, matches assignment requirements from task.md
-
 ### Verification and determinism hardening
 
 - Verifier now extracts numbers from claim prose text and flags undeclared numbers not found in tool data
@@ -312,6 +307,58 @@ Outputs structured JSON claims, not markdown prose. Each claim has section, stat
 - `llm_call_log` captures per-call model, tokens, latency, cost — included in trace.json
 - Updated Playwright test placeholder to match UI change
 
-## Not yet done
+### Citation verification strengthened
 
-- Run eval layer 2 (`--full --report`) for the submission deliverable
+- Verifier now flags all factual claims without citations, not just numeric ones (I3 compliance)
+- Data gaps and next steps sections exempted from citation requirement — these are observations about missing data and recommendations, not factual assertions
+- Judge LLM call wrapped in try/except for malformed JSON — returns error envelope instead of crashing the pipeline
+
+### Path traversal fix
+
+- Trigger string sanitized to `[A-Za-z0-9_-]` before use in output directory names (main.py and app.py)
+- Prevents custom triggers containing `..` or path separators from writing outside `output/`
+
+### Eval cases replaced
+
+- Replaced C001/C003/C004 test cases with C002 (Corvane Media), C009 (Pellucid Odds), C017 (Wexley Athletic FC)
+- 3 clients × 2 triggers = 6 cases, covering all 4 trigger types (renewal, upsell, at_risk, meeting_prep)
+- Different segments (Broadcaster, Sportsbook, Club) and tiers (Strategic, Growth) for broader coverage
+- 30 expected facts, all passing layer 1
+- Eval runner updated to support new fact keys: `total_tickets`, `open_opp_amount`, `products_held`
+
+### Reduced false UNVERIFIED flags
+
+- Prose number scanner was parsing dates (`2027-05-31` → `-31.0`) and IDs (`T-0247` → `-247.0`) as numbers, causing false "hallucinated" flags on most claims
+- Fixed: strip ISO dates and prefixed IDs from claim text before extracting numbers
+- Added `tenure_years` computed field to `get_client_profile` so the LLM can cite tenure instead of calculating it
+
+### LLM-as-judge made functional
+
+- Judge was a passive scorer — it ran, produced scores, but the scores didn't affect anything
+- Now closes the loop: if any dimension scores below 3, the writer retries with judge feedback
+- `rewrite_claims()` re-runs the writer with the judge's critique appended
+- After retry: re-verify, re-render, re-judge. One retry max (3 LLM calls normal, 5 with retry)
+- `RETRY_THRESHOLD = 3` in agent.py controls the cutoff
+
+### Trigger definitions
+
+- Added `TRIGGER_DEFINITIONS` dict to config.py with descriptions for all 4 triggers
+- Planner now receives trigger definitions alongside tool descriptions
+- Custom triggers still work (I7 compliant) — they just don't get a definition
+
+### Unit tests for all 10 tools
+
+- 27 pytest tests in `tests/test_tools.py` covering all 10 tools across 4 data shapes: normal (C002), empty (C004/C007), short history (C004), duplicate rows (C006/C010)
+- Edge case coverage: CSAT=None with no tickets, YoY=None for 2-month history, dedup correctness for K-0010/T-0281/U-00422
+- Determinism test: same tool called twice produces identical output
+- All 27 pass in <0.3s, no LLM calls needed
+- Eval runner (`run_eval.py`) runs unit tests as layer 0 before spending LLM tokens — fails fast on tool regressions
+- CLAUDE.md updated: "After modifying tools.py, run unit tests before anything else"
+
+### Prompts extracted to prompts.py
+
+- All LLM prompts moved from agent.py to `Aster_business_analyst/prompts.py`
+- `planner_system(as_of, tool_descriptions)` — function since it needs runtime values
+- `WRITER_SYSTEM` — constant string with claim schema and rules
+- `JUDGE_SYSTEM` — constant string with 4 scoring dimensions
+- agent.py imports from prompts.py, no inline prompt definitions remain

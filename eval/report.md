@@ -8,12 +8,12 @@ Expected facts from `cases.yaml` vs actual tool outputs.
 
 | Case | Client | Trigger | Facts | Result |
 | --- | --- | --- | --- | --- |
-| c1_risk | C001 | at_risk | 12 | all match |
-| c1_renew | C001 | renewal | 7 | all match |
-| c3_upsell | C003 | upsell | 5 | all match |
-| c3_meeting | C003 | meeting_prep | 3 | all match |
-| c4_risk | C004 | at_risk | 3 | all match |
-| c4_renew | C004 | renewal | 3 | all match |
+| c2_renewal | C002 | renewal | 8 | all match |
+| c2_upsell | C002 | upsell | 4 | all match |
+| c9_at_risk | C009 | at_risk | 8 | all match |
+| c9_meeting | C009 | meeting_prep | 3 | all match |
+| c17_at_risk | C017 | at_risk | 4 | all match |
+| c17_meeting | C017 | meeting_prep | 3 | all match |
 
 ## Layer 2: Briefings (end to end)
 
@@ -21,41 +21,33 @@ Full pipeline run. Claim-level = verifier pass/fail. Briefing-level = ungrounded
 
 | Case | Client | Trigger | Claims | Passed | Flagged | Ungrounded | Judge |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| c1_risk | C001 | at_risk | 28 | 8 | 20 | 2 | 5/5 |
-| c1_renew | C001 | renewal | 32 | 11 | 21 | 0 | 5/5 |
-| c3_upsell | C003 | upsell | 24 | 10 | 14 | 1 | 5/5 |
-| c3_meeting | C003 | meeting_prep | 25 | 9 | 16 | 2 | 5/5 |
-| c4_risk | C004 | at_risk | 15 | 9 | 6 | 0 | 5/5 |
-| c4_renew | C004 | renewal | 12 | 4 | 8 | 0 | 5/5 |
+| c2_renewal | C002 | renewal | 26 | 14 | 12 | 1 | 5/5 |
+| c2_upsell | C002 | upsell | 21 | 18 | 3 | 0 | 5/5 |
+| c9_at_risk | C009 | at_risk | 24 | 24 | 0 | 0 | 5/5 |
+| c9_meeting | C009 | meeting_prep | 25 | 20 | 5 | 0 | 5/5 |
+| c17_at_risk | C017 | at_risk | 23 | 20 | 3 | 0 | 5/5 |
+| c17_meeting | C017 | meeting_prep | 27 | 23 | 4 | 0 | 5/5 |
 
 ## What failed
 
-### c1_risk
+### c2_renewal
 
-- 20 claims flagged by verifier (LLM-computed numbers not in tool output)
-- ungrounded: 752.0 in: **Halden Bet (Strategic, £752K ARR, #1 in Sportsbook segment) is at risk: in-play products
-- ungrounded: 7.0 in: - Prepare renewal options before the notice deadline of 2026-12-02 (31 days away), as comm
+- 12 claims flagged by verifier (LLM-computed numbers not in tool output)
+- ungrounded: 30.0 in: - Schedule a renewal planning meeting with Corvane's head of digital well before the notic
 
-### c1_renew
+### c2_upsell
 
-- 21 claims flagged by verifier (LLM-computed numbers not in tool output)
+- 3 claims flagged by verifier (LLM-computed numbers not in tool output)
 
-### c3_upsell
+### c9_meeting
 
-- 14 claims flagged by verifier (LLM-computed numbers not in tool output)
-- ungrounded: 6.0 in: - Brenmoor has been a customer since 2020-08-01 (over 6 years). Average utilization across
+- 5 claims flagged by verifier (LLM-computed numbers not in tool output)
 
-### c3_meeting
+### c17_at_risk
 
-- 16 claims flagged by verifier (LLM-computed numbers not in tool output)
-- ungrounded: 12.0 in: - 10 support tickets were logged in the past 12 months (unchanged from the prior period). 
-- ungrounded: -142.0 in: - 10 support tickets were logged in the past 12 months (unchanged from the prior period). 
+- 3 claims flagged by verifier (LLM-computed numbers not in tool output)
 
-### c4_risk
+### c17_meeting
 
-- 6 claims flagged by verifier (LLM-computed numbers not in tool output)
-
-### c4_renew
-
-- 8 claims flagged by verifier (LLM-computed numbers not in tool output)
+- 4 claims flagged by verifier (LLM-computed numbers not in tool output)
 

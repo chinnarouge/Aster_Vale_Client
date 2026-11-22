@@ -39,16 +39,18 @@ Two front doors, one engine. The CLI (`main.py`) and the Streamlit UI (`app.py`)
 
 ```
 Aster_business_analyst/
-  config.py      — AS_OF, MODEL, DB_PATH, API key from env var
+  config.py      — AS_OF, MODEL, DB_PATH, API key, trigger definitions
+  prompts.py     — all LLM prompts (planner, writer, judge)
   tools.py       — 10 SQL tool functions + DB helpers + 3 dedup CTEs
-  agent.py       — 3 LLM calls (planner, writer, judge) + verifier + renderer
-  main.py        — CLI entry point + orchestration pipeline + tracing
+  agent.py       — orchestration (plan, write, verify, render, judge, retry) 
+  main.py        — CLI entry point + pipeline + tracing
   app.py         — Streamlit UI
+tests/
+  test_tools.py        — 27 unit tests, 4 data shapes, no LLM
+  test_streamlit_ui.py — Playwright headless browser tests
 eval/
   cases.yaml     — 6 test cases (3 clients x 2 triggers) with expected facts
-  run_eval.py    — layer 1 (free, tools only) + layer 2 (full pipeline)
-tests/
-  test_streamlit_ui.py — Playwright headless browser tests
+  run_eval.py    — unit tests (layer 0) + layer 1 (free) + layer 2 (full pipeline)
 starter_pack/    — read-only data, never modified
 output/          — per-run folders: <client_id>_<trigger>/
 docs/            — architecture.md, changelog.md
@@ -64,7 +66,7 @@ docs/            — architecture.md, changelog.md
 | Writer | **Yes.** Structured JSON claims with citations, forbidden from calculating numbers |
 | Verifier | No. Python set lookups: citations in row_ids, numbers in tool data |
 | Renderer | No. String formatting: claims to markdown with `[UNVERIFIED: reason]` tags |
-| Judge | **Yes.** Scores briefing on completeness, accuracy, actionability, data transparency |
+| Judge | **Yes.** Scores briefing on 4 dimensions; if any < 3, triggers one writer retry with feedback |
 
 
 ## Data flow
@@ -81,9 +83,10 @@ client (id or name) + trigger + optional rep context
                   each claim: section, claim, numeric_values, citations, source_tool
   -> VERIFY       every number in tool data? every citation in row_ids?
        fail -> FLAG inline with reason, never silently delete
-               three categories: LLM-computed | no source found | citation not in evidence
+               four categories: LLM-computed | no source found | citation not in evidence | no citations
   -> RENDER       claims -> markdown briefing
   -> JUDGE        scores briefing on 4 dimensions                    MODEL
+       if any dimension < 3 -> RETRY writer with feedback, re-verify, re-render, re-judge (once)
   -> briefing.md + evidence.json + scores.json + trace.json
 ```
 
@@ -108,17 +111,20 @@ Missing data means unknown, not zero. 15 of 25 clients have no meeting notes. C0
 
 Python 3.12, uv, stdlib `sqlite3`, stdlib `argparse`, Anthropic SDK (direct, no wrapper), Streamlit for UI. Claude Opus 4.6 on Anthropic Foundry.
 
-Do not add: pandas, langchain, langgraph, vector databases, an ORM, a CLI framework, or an orchestration framework. The pipeline is linear with 3 LLM calls. A framework adds weight without solving a problem we have.
+Do not add: pandas, langchain, langgraph, vector databases, an ORM, a CLI framework, or an orchestration framework. The pipeline is linear with 3 LLM calls (5 if the judge triggers a retry). A framework adds weight without solving a problem we have.
 
 
 ## Test loop
 
 | Layer | What it catches | How to run |
 | --- | --- | --- |
-| **Layer 1** (free) | Tool output correctness: 33 expected facts across 6 cases | `uv run eval/run_eval.py` |
+| **Unit tests** (free) | Tool correctness across 4 data shapes: normal, empty, short, duplicate | `uv run python -m pytest tests/test_tools.py -v` |
+| **Layer 1** (free) | Tool output correctness: 30 expected facts across 6 cases | `uv run eval/run_eval.py` |
 | **Layer 2** (costs money) | Full pipeline + ungrounded number check on rendered briefing | `uv run eval/run_eval.py --full` |
 | **Report** | Markdown summary with pass/fail table and failure details | `uv run eval/run_eval.py --full --report` |
 | **Tracing** | Per-run: LLM tokens/cost/latency, tool timings, pipeline steps | automatic, saved to `trace.json` |
+
+**After modifying `tools.py`, run unit tests before anything else:** `uv run python -m pytest tests/test_tools.py -v`
 
 **After changing a prompt, re-run the eval and compare violation counts, not prose.**
 

@@ -1,6 +1,7 @@
 import json
-import sys
 import os
+import re
+import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -15,6 +16,9 @@ from agent import (
     render_briefing,
     save_evidence,
     judge,
+    rewrite_claims,  # noqa: F401
+    judge_needs_retry,  # noqa: F401
+    judge_feedback,  # noqa: F401
 )
 
 
@@ -95,7 +99,8 @@ with col2:
 
             briefing = render_briefing(verified, client_data, trigger, tool_results)
 
-            run_dir = os.path.join(OUTPUT_DIR, f"{client_id}_{trigger}")
+            safe_trigger = re.sub(r"[^A-Za-z0-9_-]", "_", trigger)
+            run_dir = os.path.join(OUTPUT_DIR, f"{client_id}_{safe_trigger}")
             os.makedirs(run_dir, exist_ok=True)
             briefing_path = os.path.join(run_dir, "briefing.md")
             with open(briefing_path, "w") as f:
@@ -113,6 +118,25 @@ with col2:
                 indent=2,
             )
             scores = judge(briefing, trigger, evidence_summary)
+
+            if judge_needs_retry(scores):
+                st.write("Judge scored below threshold, retrying writer...")
+                feedback = judge_feedback(scores)
+                retry_claims = rewrite_claims(
+                    trigger, client_data, tool_results, context, feedback
+                )
+                if retry_claims:
+                    verified = verify_claims(retry_claims, tool_results)
+                    passed = sum(1 for c in verified if c["verification"] == "passed")
+                    flagged = sum(1 for c in verified if c["verification"] == "flagged")
+                    briefing = render_briefing(
+                        verified, client_data, trigger, tool_results
+                    )
+                    with open(briefing_path, "w") as f:
+                        f.write(briefing)
+                    save_evidence(tool_results, verified, run_dir)
+                    scores = judge(briefing, trigger, evidence_summary)
+
             scores_path = os.path.join(run_dir, "scores.json")
             with open(scores_path, "w") as f:
                 json.dump(scores, f, indent=2)

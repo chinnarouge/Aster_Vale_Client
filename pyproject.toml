@@ -11,3 +11,8 @@ dependencies = [
 
 [project.scripts]
 aster-brief = "Aster_business_analyst.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]

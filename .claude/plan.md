@@ -130,8 +130,8 @@ Why not langchain/langgraph: the chain is linear. Plan, run tools, write, verify
 
 | # | Decision | Choice and reason |
 | --- | --- | --- |
-| T1 | Orchestration | **Direct anthropic SDK calls.** Three calls: planner, writer, judge. Each is a single `messages.create()`. No Tool Runner, no agent loop. The pipeline is linear and the tools are deterministic Python, so an agentic loop adds complexity without value. |
-| T2 | Verifier failure policy | **Flag with categorized reason, never silently remove.** Three failure categories: `LLM-computed value` (correct math from tool data, but model did the arithmetic), `no source found` (hallucinated number), `citation not in evidence` (dangling row ID). No repair loop — adds a 4th LLM call, might still fail, and asks an LLM to verify another LLM's math. |
+| T1 | Orchestration | **Direct anthropic SDK calls.** Three calls normally: planner, writer, judge. Up to 5 if the judge triggers a retry (writer retry + re-judge). Each is a single `messages.create()`. No Tool Runner, no agent loop. All prompts in `prompts.py`. |
+| T2 | Verifier failure policy | **Flag with categorized reason, never silently remove.** Four failure categories: `LLM-computed value`, `no source found`, `citation not in evidence`, `no citations`. The judge closes the loop: if any dimension scores below 3, the writer retries with judge feedback, then re-verifies and re-judges. One retry max. |
 | T3 | Stack | Python 3.12 + uv, stdlib `sqlite3`, stdlib `argparse`, Claude Opus 4.6 on Anthropic Foundry, Streamlit for UI. Plain Python validation (no pydantic — 10 lines of validation doesn't justify a dependency). |
 | T4 | Planner approach | **Free-flow reasoning.** No hardcoded per-trigger tool lists. Planner sees tool descriptions and reasons about which are relevant. Generalizes to unknown triggers without code changes (interview-ready). `check_data_quality` always forced in Python. |
 | T5 | Writer input | **Summarized tool data.** Raw tool outputs are trimmed before sending to the writer — drop full monthly arrays, keep computed stats + row_ids. Cuts input tokens ~80%, full data stays in evidence.json. |
@@ -160,7 +160,7 @@ CLI or Streamlit: client + trigger + optional context
 4. RUN TOOLS                           deterministic SQL, sequential
    each tool returns {tool, data, row_ids}
    dedup CTEs handle known duplicates
-   computed fields: days_until_notice, arr_vs_pipeline_gap, ticket_change_abs, csat_change
+   computed fields: days_until_notice, tenure_years, arr_vs_pipeline_gap, ticket_change_abs, csat_change
    traced: name, row count, execution time per tool
     |
     v
@@ -190,6 +190,11 @@ CLI or Streamlit: client + trigger + optional context
     v
 9. JUDGE                               LLM call 3 (always runs)
    scores: completeness, accuracy, actionability, data_transparency (1-5)
+   if any dimension < 3:
+       -> RETRY WRITER with judge feedback (LLM call 4)
+       -> re-verify, re-render
+       -> RE-JUDGE (LLM call 5)
+   one retry max
     |
     v
 10. SAVE
@@ -210,7 +215,7 @@ CLI or Streamlit: client + trigger + optional context
 | Validator | No | Required key checks, type coercion. |
 | Verifier | No | Exact numeric matching and citation resolution. Categorized failure reasons. |
 | Renderer | No | String formatting: claims to markdown with flag tags. |
-| Judge | **Yes** | Quality scoring on 4 dimensions. Always runs. |
+| Judge | **Yes** | Quality scoring on 4 dimensions. Triggers one writer retry if any dimension < 3. |
 
 ### Writer and verifier design (must-have 4)
 
@@ -315,9 +320,10 @@ The starter_pack data is never modified. All cleaning happens at query time.
 | 23 | Writer prompt hardened — explicit "do not calculate" with examples | done |
 | 24 | Writer input summarization — _summarize_for_writer(), ~80% token reduction | done |
 | 25 | Eval suite — eval/cases.yaml, eval/run_eval.py, layer 1 (free) + layer 2 (full) | done |
-| 26 | CLAUDE.md rewrite — invariants table, architecture, data flow, test loop | done |
-| 27 | requirements.txt | done |
-| 28 | README.md — how to run, design notes, eval results, limitations | next |
+| 26 | Unit tests — 27 pytest tests, 4 data shapes, layer 0 in eval runner | done |
+| 27 | CLAUDE.md rewrite — invariants table, architecture, data flow, test loop | done |
+| 28 | requirements.txt | done |
+| 29 | README.md — how to run, design notes, eval results, limitations | done |
 
 ---
 

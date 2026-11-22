@@ -25,6 +25,7 @@ from tools import (
     get_support_summary,
     get_opportunities,
     get_meeting_notes,
+    get_whitespace,
 )
 from agent import (
     plan,
@@ -34,6 +35,9 @@ from agent import (
     render_briefing,
     save_evidence,
     judge,
+    rewrite_claims,  # noqa: F401
+    judge_needs_retry,  # noqa: F401
+    judge_feedback,  # noqa: F401
 )
 
 CASES_PATH = Path(__file__).parent / "cases.yaml"
@@ -65,6 +69,7 @@ def gather_facts(client_id, as_of):
     facts["open_tickets"] = len(sd.get("open_tickets", []))
     facts["avg_csat"] = sd.get("avg_csat")
     facts["total_tickets_current"] = sd.get("total_tickets")
+    facts["total_tickets"] = sd.get("total_tickets")
     facts["ticket_change_pct"] = sd.get("change_pct")
 
     od = opps["data"]
@@ -75,9 +80,13 @@ def gather_facts(client_id, as_of):
     ]
     if open_opps:
         facts["renewal_opp_amount"] = open_opps[0]["amount_eur"]
+        facts["open_opp_amount"] = open_opps[0]["amount_eur"]
     facts["arr_vs_pipeline_gap"] = od.get("arr_vs_pipeline_gap")
 
     facts["meeting_note_count"] = notes["data"].get("count")
+
+    ws = get_whitespace(client_id)
+    facts["products_held"] = len(ws["data"].get("held_products", []))
 
     return facts
 
@@ -114,7 +123,9 @@ def _same(expected, actual):
 
 
 def _numbers_in(text):
-    """Extract all numbers from a string."""
+    """Extract all numbers from a string, ignoring dates and prefixed IDs."""
+    text = re.sub(r"\d{4}-\d{2}-\d{2}", " ", text)
+    text = re.sub(r"[A-Z]-\d+", " ", text)
     return [float(m) for m in re.findall(r"-?\d[\d,]*\.?\d*", text.replace(",", ""))]
 
 
@@ -211,11 +222,58 @@ def run_briefing(case, as_of):
         indent=2,
     )
     scores = judge(briefing, case["trigger"], evidence_summary)
-    with open(os.path.join(out_dir, "scores.json"), "w") as f:
-        json.dump(scores, f, indent=2)
     steps.append(
         ("judge", time.time() - t0, f"overall: {scores.get('overall', '?')}/5")
     )
+
+    retried = False
+    if judge_needs_retry(scores):
+        feedback = judge_feedback(scores)
+        t0 = time.time()
+        retry_claims = rewrite_claims(
+            case["trigger"],
+            client_data,
+            tool_results,
+            case.get("context", ""),
+            feedback,
+        )
+        if retry_claims:
+            steps.append(
+                ("write_retry", time.time() - t0, f"{len(retry_claims)} claims")
+            )
+            t0 = time.time()
+            verified = verify_claims(retry_claims, tool_results)
+            passed = sum(1 for c in verified if c["verification"] == "passed")
+            flagged = sum(1 for c in verified if c["verification"] == "flagged")
+            steps.append(
+                (
+                    "verify_retry",
+                    time.time() - t0,
+                    f"{passed} passed, {flagged} flagged",
+                )
+            )
+            t0 = time.time()
+            briefing = render_briefing(
+                verified, client_data, case["trigger"], tool_results
+            )
+            steps.append(("render_retry", time.time() - t0, None))
+            with open(os.path.join(out_dir, "briefing.md"), "w") as f:
+                f.write(briefing)
+            save_evidence(tool_results, verified, out_dir)
+            t0 = time.time()
+            scores = judge(briefing, case["trigger"], evidence_summary)
+            steps.append(
+                (
+                    "judge_retry",
+                    time.time() - t0,
+                    f"overall: {scores.get('overall', '?')}/5",
+                )
+            )
+            retried = True
+
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, "scores.json"), "w") as f:
+        json.dump(scores, f, indent=2)
 
     total_elapsed = time.time() - pipeline_start
 
@@ -226,7 +284,8 @@ def run_briefing(case, as_of):
             {"step": n, "elapsed_s": round(e, 3), "detail": d} for n, e, d in steps
         ],
         "total_elapsed_s": round(total_elapsed, 3),
-        "llm_calls": 3,
+        "retried": retried,
+        "llm_calls": 5 if retried else 3,
         "claims_total": len(verified),
         "claims_passed": passed,
         "claims_flagged": flagged,
@@ -314,7 +373,36 @@ def generate_report(dataset, figure_results, briefing_results):
     return "\n".join(lines) + "\n"
 
 
+def run_unit_tests():
+    """Layer 0: run pytest on tool unit tests. Fail fast before spending LLM tokens."""
+    import subprocess
+
+    print("=" * 60)
+    print("LAYER 0: Unit tests (pytest)")
+    print("=" * 60)
+
+    test_file = Path(__file__).parent.parent / "tests" / "test_tools.py"
+    if not test_file.exists():
+        print("  SKIP — tests/test_tools.py not found")
+        return True
+
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", str(test_file), "-v", "--tb=short"],
+        capture_output=True,
+        text=True,
+    )
+    print(result.stdout)
+    if result.returncode != 0:
+        print(result.stderr)
+        print("\nUnit tests failed. Fix before running eval.\n")
+        return False
+    return True
+
+
 def main():
+    if not run_unit_tests():
+        return 1
+
     dataset = safe_load(CASES_PATH.read_text(encoding="utf-8"))
     as_of = dataset["as_of"]
 

@@ -6,7 +6,15 @@ import time
 
 import anthropic
 
-from config import AS_OF, MODEL, ANTHROPIC_API_KEY, ANTHROPIC_BASE_URL, OUTPUT_DIR
+from config import (  # noqa: F401
+    AS_OF,
+    MODEL,
+    ANTHROPIC_API_KEY,
+    ANTHROPIC_BASE_URL,
+    OUTPUT_DIR,
+    TRIGGER_DEFINITIONS,
+)
+from prompts import planner_system, WRITER_SYSTEM, JUDGE_SYSTEM  # noqa: F401
 from tools import TOOL_DESCRIPTIONS, run_tool
 
 logger = logging.getLogger("aster")
@@ -50,31 +58,17 @@ def _call_llm(system, user, max_tokens=4096, label="llm"):
     return resp.content[0].text
 
 
-PLANNER_SYSTEM = f"""You are a planning agent for a client intelligence system at Aster Vale Sports Data.
-Today's date (as_of) is {AS_OF}.
-
-Given a client profile, a trigger, and optional rep context, decide which analysis tools to run.
-
-Available tools and what each returns:
-{json.dumps(TOOL_DESCRIPTIONS, indent=2)}
-
-Reason about which tools are relevant for this specific trigger and client situation. Be selective — not every tool is needed for every trigger. A renewal does not need whitespace analysis. An upsell does not need a full support deep-dive unless the rep's context mentions support issues.
-
-Pick only the tools that directly serve the trigger's purpose. Fewer focused tools produce a better briefing than running everything.
-
-Always include check_data_quality — data gaps must be surfaced in every briefing.
-
-Return ONLY a JSON array of tool names, nothing else."""
-
-
 def plan(client_profile, trigger, rep_context=""):
+    trigger_def = TRIGGER_DEFINITIONS.get(trigger, "")
+    trigger_line = f"{trigger}: {trigger_def}" if trigger_def else trigger
     user_msg = f"""Client: {json.dumps(client_profile)}
-Trigger: {trigger}
+Trigger: {trigger_line}
 Rep context: {rep_context or "None provided"}
 
 Return a JSON array of tool names to run."""
 
-    raw = _call_llm(PLANNER_SYSTEM, user_msg, max_tokens=512, label="planner")
+    system = planner_system(AS_OF, TOOL_DESCRIPTIONS)
+    raw = _call_llm(system, user_msg, max_tokens=512, label="planner")
     match = re.search(r"\[.*\]", raw, re.DOTALL)
     if not match:
         raise ValueError(f"Planner did not return a JSON array: {raw}")
@@ -109,32 +103,6 @@ def run_tools(tool_names, client_id):
             row_count = 0
         logger.info(f"[TOOL] {name} | {row_count} rows | {elapsed:.3f}s")
     return results
-
-
-WRITER_SYSTEM = f"""You are a briefing writer for Aster Vale Sports Data.
-Today's date (as_of) is {AS_OF}. All money is EUR.
-
-You receive tool outputs (structured data with row IDs) and must produce a JSON array of claims.
-
-Each claim must be:
-{{
-  "section": one of "headline", "account_snapshot", "contract_position", "usage_trends", "growth_opportunities", "support_health", "relationship_context", "risks", "next_steps", "data_gaps",
-  "claim": a clear statement for the sales rep,
-  "numeric_values": [list of key numbers in the claim, as numbers not strings],
-  "citations": [list of source IDs like "contracts:K-0002", "usage:U-00422", "ticket:T-0123", "opp:O-0001", "note:N-003", "product:WIDGETS"],
-  "source_tool": the tool name that provided the data
-}}
-
-Rules:
-- CRITICAL: Every number in your output MUST appear verbatim in the tool output data. Do not calculate, subtract, add, divide, halve, multiply, or derive new numbers. Do not build hypothetical scenarios with computed figures. If a tool says ARR is 752000 and an opportunity is 541500, say both numbers — do NOT output 210500 as the gap. Use only the numbers the tools give you, exactly as given.
-- Use the exact numeric values from tool outputs.
-- Cite specific row IDs from tool output row_ids.
-- If tool data shows a conflict (e.g. meeting note contradicts usage data), report BOTH sides with citations to each.
-- If data is missing or insufficient, say so explicitly in a data_gaps claim.
-- Lead with what matters for the trigger.
-- Keep claims factual and concise. No speculation.
-- Include next_steps claims with concrete actions for the rep.
-- Return ONLY the JSON array, no other text."""
 
 
 CLAIM_REQUIRED_KEYS = {"section", "claim", "numeric_values", "citations", "source_tool"}
@@ -228,13 +196,13 @@ Tool outputs:
 {json.dumps(tool_data, indent=2, default=str)}
 
 Produce the JSON claims array."""
-
-    raw = _call_llm(WRITER_SYSTEM, user_msg, max_tokens=8192, label="writer")
+    raw = _call_llm(WRITER_SYSTEM, user_msg, max_tokens=4096, label="writer")
     match = re.search(r"\[.*\]", raw, re.DOTALL)
     if not match:
         raise ValueError(f"Writer did not return a JSON array: {raw}")
     json_str = match.group()
     json_str = re.sub(r",\s*([}\]])", r"\1", json_str)
+
     try:
         raw_claims = json.loads(json_str)
     except json.JSONDecodeError:
@@ -307,14 +275,14 @@ def verify_claims(claims, tool_results):
     for claim in claims:
         issues = []
 
-        if not claim.get("citations"):
-            if claim.get("numeric_values"):
-                issues.append(
-                    {
-                        "type": "missing_citation",
-                        "detail": "claim has numeric values but no citations",
-                    }
-                )
+        section = claim.get("section", "")
+        if not claim.get("citations") and section not in ("data_gaps", "next_steps"):
+            issues.append(
+                {
+                    "type": "missing_citation",
+                    "detail": "claim has no citations",
+                }
+            )
 
         for cite in claim.get("citations", []):
             parts = cite.split(":")
@@ -342,7 +310,10 @@ def verify_claims(claims, tool_results):
         all_nums_list = sorted(all_nums)
 
         prose_nums = set()
-        for m in re.findall(r"-?\d[\d,]*\.?\d*", claim.get("claim", "")):
+        claim_text = claim.get("claim", "")
+        claim_text = re.sub(r"\d{4}-\d{2}-\d{2}", " ", claim_text)
+        claim_text = re.sub(r"[A-Z]-\d+", " ", claim_text)
+        for m in re.findall(r"-?\d[\d,]*\.?\d*", claim_text):
             try:
                 prose_nums.add(float(m.replace(",", "")))
             except ValueError:
@@ -530,24 +501,62 @@ def save_evidence(tool_results, claims, output_dir=OUTPUT_DIR):
     return path
 
 
-JUDGE_SYSTEM = f"""You are a quality judge for client intelligence briefings at Aster Vale Sports Data.
-Today's date (as_of) is {AS_OF}.
+RETRY_THRESHOLD = 3
 
-Score the briefing on these dimensions (1-5 each):
-- completeness: Does it cover what the trigger requires?
-- accuracy: Are claims supported by the evidence?
-- actionability: Are next steps concrete and useful for the rep?
-- data_transparency: Does it flag gaps, conflicts, and uncertainty?
 
-Return ONLY a JSON object:
-{{
-  "completeness": {{"score": N, "comment": "..."}},
-  "accuracy": {{"score": N, "comment": "..."}},
-  "actionability": {{"score": N, "comment": "..."}},
-  "data_transparency": {{"score": N, "comment": "..."}},
-  "overall": N,
-  "summary": "one sentence overall assessment"
-}}"""
+def judge_needs_retry(scores):
+    """Check if any dimension scored below threshold."""
+    for dim in ("completeness", "accuracy", "actionability", "data_transparency"):
+        entry = scores.get(dim, {})
+        if isinstance(entry, dict) and entry.get("score", 5) < RETRY_THRESHOLD:
+            return True
+    return False
+
+
+def judge_feedback(scores):
+    """Extract low-scoring dimensions as feedback for the writer."""
+    feedback = []
+    for dim in ("completeness", "accuracy", "actionability", "data_transparency"):
+        entry = scores.get(dim, {})
+        if isinstance(entry, dict) and entry.get("score", 5) < RETRY_THRESHOLD:
+            feedback.append(f"{dim} ({entry['score']}/5): {entry.get('comment', '')}")
+    return "\n".join(feedback)
+
+
+def rewrite_claims(trigger, client_profile, tool_results, rep_context, judge_feedback):
+    """Re-run the writer with judge feedback on what to improve."""
+    tool_data = _summarize_for_writer(tool_results)
+
+    user_msg = f"""Trigger: {trigger}
+Client: {json.dumps(client_profile)}
+Rep context: {rep_context or "None provided"}
+
+Tool outputs:
+{json.dumps(tool_data, indent=2, default=str)}
+
+JUDGE FEEDBACK FROM PREVIOUS ATTEMPT — fix these issues:
+{judge_feedback}
+
+Produce an improved JSON claims array."""
+
+    raw = _call_llm(WRITER_SYSTEM, user_msg, max_tokens=4096, label="writer_retry")
+    match = re.search(r"\[.*\]", raw, re.DOTALL)
+    if not match:
+        return None
+    json_str = match.group()
+    json_str = re.sub(r",\s*([}\]])", r"\1", json_str)
+    try:
+        raw_claims = json.loads(json_str)
+    except json.JSONDecodeError:
+        last_brace = json_str.rfind("}")
+        if last_brace > 0:
+            truncated = json_str[: last_brace + 1] + "]"
+            truncated = re.sub(r",\s*\]", "]", truncated)
+            raw_claims = json.loads(truncated)
+        else:
+            return None
+    validated = [_validate_claim(c) for c in raw_claims]
+    return [c for c in validated if c is not None]
 
 
 def judge(briefing, trigger, evidence_summary):
@@ -564,5 +573,8 @@ Score this briefing."""
     raw = _call_llm(JUDGE_SYSTEM, user_msg, max_tokens=1024, label="judge")
     match = re.search(r"\{.*\}", raw, re.DOTALL)
     if match:
-        return json.loads(match.group())
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            return {"error": "Judge returned malformed JSON", "raw": raw}
     return {"error": "Judge did not return valid JSON", "raw": raw}
