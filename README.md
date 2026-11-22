@@ -157,7 +157,6 @@ docs/
   agents/             -- code-architect, code-explorer, code-reviewer
   commands/           -- review
 data_analysis.md      -- Phase 1 data investigation findings
-code_walkthrough.md   -- end-to-end code explanation (for my reference)
 task.md               -- assignment brief (verbatim)
 CLAUDE.md             -- AI coding tool instructions
 ```
