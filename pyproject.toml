@@ -1,0 +1,13 @@
+[project]
+name = "aster-business-analyst"
+version = "0.1.0"
+description = "Client intelligence agent for Aster Vale Sports Data"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic",
+    "streamlit",
+    "pyyaml",
+]
+
+[project.scripts]
+aster-brief = "Aster_business_analyst.main:main"

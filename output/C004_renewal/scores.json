@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "The briefing thoroughly covers all dimensions relevant to a renewal trigger: account profile, contract details, usage trends, support health, relationship context, risks, growth opportunities, and data gaps. Every section expected for a renewal briefing is present and substantive."
+  },
+  "accuracy": {
+    "score": 4,
+    "comment": "Claims are well-grounded in the evidence summary fields (client profile, contract status, usage trend, support summary, meeting notes). The specific data points (48000 EUR ARR, 523.0\u2192800.0K API calls, 33.1% utilization, auto-renew, dates) align with the tool outputs listed. However, nearly every section is marked [UNVERIFIED], which creates some uncertainty about whether the specific values were directly extracted or inferred. The notice deadline calculation of 2027-08-01 and 273 days appears reasonable but isn't directly verifiable from the evidence summary alone."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Next steps are specific, prioritized, and time-bound: schedule an immediate onboarding check-in, investigate the utilization gap, and set a Q2 2027 renewal planning reminder. Each recommendation ties directly to an identified risk or gap. The rep has clear actions to take."
+  },
+  "data_transparency": {
+    "score": 5,
+    "comment": "The briefing is exceptionally transparent about data limitations: it repeatedly flags the 2-month data limitation, absence of meeting notes, lack of support/CSAT data, and inability to do YoY comparisons. The [UNVERIFIED] tags are applied liberally throughout, and the dedicated Data Gaps section consolidates all confidence concerns. This is exemplary transparency."
+  },
+  "overall": 5,
+  "summary": "An excellent renewal briefing that is comprehensive, well-structured, and remarkably transparent about data limitations for a very new account, providing the rep with clear, actionable next steps to build the relationship before the renewal window."
+}

@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 2,
+    "comment": "The trigger 'lol' is nonsensical and should have been flagged as invalid or ambiguous, yet the briefing proceeds as though it were a legitimate trigger. It covers basic profile data and data quality issues but misses the fundamental step of acknowledging the trigger is meaningless. No contract, usage, opportunity, or meeting data is covered, though gaps are noted."
+  },
+  "accuracy": {
+    "score": 3,
+    "comment": "The briefing correctly reflects the tool outputs it received (client profile fields and data quality issues). However, nearly every claim is tagged as '[UNVERIFIED: no source found]', which undermines confidence. The evidence summary does show get_client_profile and check_data_quality were called, so the profile details likely came from those tools \u2014 the UNVERIFIED tags on profile data seem overly cautious or inconsistent with the evidence summary."
+  },
+  "actionability": {
+    "score": 2,
+    "comment": "The recommended next steps (collect CSAT scores, request updated data) are generic housekeeping tasks rather than strategic actions tied to any specific trigger event. Without a valid trigger, there's no context-appropriate action to recommend, and the briefing doesn't acknowledge this."
+  },
+  "data_transparency": {
+    "score": 4,
+    "comment": "The briefing does a solid job flagging extensive data gaps \u2014 missing contract, usage, opportunity, meeting, and product data \u2014 and notes the 3 tickets without CSAT scores. The liberal use of UNVERIFIED tags, while arguably excessive for data that came from tool outputs, errs on the side of caution. Good overall transparency."
+  },
+  "overall": 2,
+  "summary": "The briefing fails to address that the trigger 'lol' is nonsensical and should have been questioned or rejected, instead producing a generic, mostly unverified account stub with limited actionability."
+}

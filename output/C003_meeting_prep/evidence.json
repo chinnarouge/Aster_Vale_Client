@@ -1,0 +1,1882 @@
+{
+  "as_of": "2026-11-01",
+  "tools_run": [
+    "get_client_profile",
+    "get_contract_status",
+    "get_usage_trend",
+    "get_support_summary",
+    "get_opportunities",
+    "get_meeting_notes",
+    "check_data_quality"
+  ],
+  "tools_summary": {
+    "get_client_profile": {
+      "row_ids": [
+        "C003"
+      ],
+      "keys": [
+        "client_id",
+        "client_name",
+        "segment",
+        "country",
+        "account_owner",
+        "customer_since",
+        "tier"
+      ]
+    },
+    "get_contract_status": {
+      "row_ids": [
+        "K-0005",
+        "L-00015",
+        "L-00016",
+        "L-00017",
+        "L-00018"
+      ],
+      "keys": [
+        "active_contracts",
+        "pending_contracts",
+        "total_arr",
+        "has_active_contract"
+      ]
+    },
+    "get_usage_trend": {
+      "row_ids": [
+        "U-00169",
+        "U-00173",
+        "U-00177",
+        "U-00181",
+        "U-00185",
+        "U-00189",
+        "U-00193",
+        "U-00197",
+        "U-00201",
+        "U-00205",
+        "U-00209",
+        "U-00213",
+        "U-00217",
+        "U-00221",
+        "U-00225",
+        "U-00229",
+        "U-00233",
+        "U-00237",
+        "U-00241",
+        "U-00245",
+        "U-00249",
+        "U-00253",
+        "U-00257",
+        "U-00261",
+        "U-00170",
+        "U-00174",
+        "U-00178",
+        "U-00182",
+        "U-00186",
+        "U-00190",
+        "U-00194",
+        "U-00198",
+        "U-00202",
+        "U-00206",
+        "U-00210",
+        "U-00214",
+        "U-00218",
+        "U-00222",
+        "U-00226",
+        "U-00230",
+        "U-00234",
+        "U-00238",
+        "U-00242",
+        "U-00246",
+        "U-00250",
+        "U-00254",
+        "U-00258",
+        "U-00262",
+        "U-00171",
+        "U-00175",
+        "U-00179",
+        "U-00183",
+        "U-00187",
+        "U-00191",
+        "U-00195",
+        "U-00199",
+        "U-00203",
+        "U-00207",
+        "U-00211",
+        "U-00215",
+        "U-00219",
+        "U-00223",
+        "U-00227",
+        "U-00231",
+        "U-00235",
+        "U-00239",
+        "U-00243",
+        "U-00247",
+        "U-00251",
+        "U-00255",
+        "U-00259",
+        "U-00263",
+        "U-00172",
+        "U-00176",
+        "U-00180",
+        "U-00184",
+        "U-00188",
+        "U-00192",
+        "U-00196",
+        "U-00200",
+        "U-00204",
+        "U-00208",
+        "U-00212",
+        "U-00216",
+        "U-00220",
+        "U-00224",
+        "U-00228",
+        "U-00232",
+        "U-00236",
+        "U-00240",
+        "U-00244",
+        "U-00248",
+        "U-00252",
+        "U-00256",
+        "U-00260",
+        "U-00264"
+      ],
+      "keys": [
+        "products"
+      ]
+    },
+    "get_support_summary": {
+      "row_ids": [
+        "T-0142",
+        "T-0146",
+        "T-0175",
+        "T-0191",
+        "T-0213",
+        "T-0222",
+        "T-0229",
+        "T-0233",
+        "T-0243",
+        "T-0258"
+      ],
+      "keys": [
+        "window",
+        "total_tickets",
+        "by_priority",
+        "by_category",
+        "prev_window_total",
+        "prev_by_priority",
+        "ticket_change_abs",
+        "change_pct",
+        "open_tickets",
+        "avg_csat",
+        "csat_response_rate",
+        "csat_responses",
+        "prev_avg_csat",
+        "csat_change",
+        "notable_tickets"
+      ]
+    },
+    "get_opportunities": {
+      "row_ids": [
+        "O-0003"
+      ],
+      "keys": [
+        "opportunities",
+        "open_count",
+        "total_pipeline_eur",
+        "current_arr_eur",
+        "arr_vs_pipeline_gap"
+      ]
+    },
+    "get_meeting_notes": {
+      "row_ids": [
+        "N-006",
+        "N-007"
+      ],
+      "keys": [
+        "notes",
+        "count"
+      ]
+    },
+    "check_data_quality": {
+      "row_ids": [],
+      "keys": [
+        "issues",
+        "issue_count"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "section": "headline",
+      "claim": "Brenmoor Football League's contract (K-0005) expires in 60 days on 2026-12-31 with no auto-renew. The notice deadline of 2026-10-02 has already passed. A renewal opportunity of \u20ac258,500 is at Proposal stage, awaiting client board approval.",
+      "numeric_values": [
+        60,
+        258500
+      ],
+      "citations": [
+        "K-0005",
+        "O-0003"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-31.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-10.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-5.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "account_snapshot",
+      "claim": "Brenmoor Football League is a Core-tier League/Federation client based in the Netherlands, a customer since 2020-08-01. Current ARR is \u20ac235,000 across 4 products: Live Streaming (\u20ac110,000), Integrity Monitoring (\u20ac50,000), Historical Stats Archive (\u20ac40,000), and Fan Engagement Analytics (\u20ac35,000).",
+      "numeric_values": [
+        235000,
+        110000,
+        50000,
+        40000,
+        35000
+      ],
+      "citations": [
+        "C003",
+        "K-0005",
+        "L-00015",
+        "L-00016",
+        "L-00017",
+        "L-00018"
+      ],
+      "source_tool": "get_client_profile",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-8.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2020.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "contract_position",
+      "claim": "The active renewal contract K-0005 ends 2026-12-31 (60 days out). Auto-renew is off and the notice deadline (2026-10-02) has passed, meaning if no new deal is signed the contract will lapse. Current ARR is \u20ac235,000; the renewal opportunity O-0003 is valued at \u20ac258,500, expected to close 2026-12-15.",
+      "numeric_values": [
+        60,
+        235000,
+        258500
+      ],
+      "citations": [
+        "K-0005",
+        "O-0003"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-31.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-15.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-10.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-5.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-3.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "contract_position",
+      "claim": "The meeting note from 2026-09-18 states the commercial director said the renewal is 'basically agreed' at around +10%, pending board approval. This aligns with the opportunity O-0003 amount of \u20ac258,500 against current ARR of \u20ac235,000.",
+      "numeric_values": [
+        258500,
+        235000
+      ],
+      "citations": [
+        "N-006",
+        "O-0003",
+        "K-0005"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-18.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-9.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-3.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Live Streaming (STREAM) shows a year-over-year decline of -24.2%, but a recent quarter-over-quarter increase of 24.0%. The commercial director attributed increased usage to moving all second-division matches onto the platform this season. Streaming exceeded included allowance in 5 months over the contract period. Average utilization is 64.8%.",
+      "numeric_values": [
+        -24.2,
+        24.0,
+        5,
+        64.8
+      ],
+      "citations": [
+        "U-00256",
+        "U-00260",
+        "U-00264",
+        "N-006"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "CONFLICT: The commercial director stated streaming usage is 'up massively' (N-006), but YoY data shows a -24.2% decline. The recent 3-month trend does show a 24.0% increase vs. prior period (Aug: 412h, Sep: 445h, Oct: 435h), which may explain the client's perception. The rep should clarify the timeframe the client is referencing.",
+      "numeric_values": [
+        -24.2,
+        24.0,
+        412,
+        445,
+        435
+      ],
+      "citations": [
+        "N-006",
+        "U-00256",
+        "U-00260",
+        "U-00264"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-6.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Historical Stats Archive (STATS_ARCHIVE) usage is growing: +7.6% YoY and +26.6% recent vs. prior period, with Oct at 166 thousand queries. Average utilization is 71.0%.",
+      "numeric_values": [
+        7.6,
+        26.6,
+        166,
+        71.0
+      ],
+      "citations": [
+        "U-00255",
+        "U-00259",
+        "U-00263"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Integrity Monitoring usage is up +2.7% YoY and +24.4% recent vs. prior period (Aug: 244, Sep: 279, Oct: 262 matches monitored). Average utilization is 78.7%. The integrity review meeting in April confirmed the league values the alerts and reporting format.",
+      "numeric_values": [
+        2.7,
+        24.4,
+        244,
+        279,
+        262,
+        78.7
+      ],
+      "citations": [
+        "U-00254",
+        "U-00258",
+        "U-00262",
+        "N-007"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Fan Engagement Analytics (FAN_INSIGHTS) has stable usage at 18 active dashboard users for the last 3 months, with +8.1% YoY growth but only +1.9% recent vs. prior period. Average utilization is 71.3%.",
+      "numeric_values": [
+        18,
+        8.1,
+        1.9,
+        71.3
+      ],
+      "citations": [
+        "U-00253",
+        "U-00257",
+        "U-00261"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "growth_opportunities",
+      "claim": "The renewal opportunity O-0003 is at Proposal stage for \u20ac258,500 with an expected close of 2026-12-15. Next step is awaiting client board approval. Given only 60 days remain on the contract and no auto-renew, securing this approval is time-critical.",
+      "numeric_values": [
+        258500,
+        60
+      ],
+      "citations": [
+        "O-0003",
+        "K-0005"
+      ],
+      "source_tool": "get_opportunities",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-15.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-3.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "growth_opportunities",
+      "claim": "Live Streaming exceeded its included allowance in 5 months over the contract period and the client has expanded second-division streaming. This could support a conversation about a higher streaming tier or overage pricing in the renewal.",
+      "numeric_values": [
+        5
+      ],
+      "citations": [
+        "N-006",
+        "U-00256",
+        "U-00260",
+        "U-00264"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "support_health",
+      "claim": "10 support tickets were logged in the past 12 months (unchanged from the prior period). Breakdown: 3 P2, 5 P3, 2 P4. Categories include Integration (4), Latency (2), Feature request (2), and Outage (2). Average CSAT is 4.14 (down from 4.25 in the prior period, a change of -0.11) with a 70.0% response rate (7 responses).",
+      "numeric_values": [
+        10,
+        3,
+        5,
+        2,
+        4,
+        2,
+        2,
+        2,
+        4.14,
+        4.25,
+        -0.11,
+        70.0,
+        7
+      ],
+      "citations": [
+        "T-0142",
+        "T-0146",
+        "T-0175",
+        "T-0191",
+        "T-0213",
+        "T-0222",
+        "T-0229",
+        "T-0233",
+        "T-0243",
+        "T-0258"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "12.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "support_health",
+      "claim": "Notable P2 tickets: T-0146 (Latency \u2013 increased API response times on STREAM, closed), T-0222 (Outage \u2013 stream buffering on mobile app for second-division matches, closed, CSAT 3), and T-0243 (Outage \u2013 Stats Archive feed unavailable for 20 minutes, closed). The low CSAT of 3 on T-0222 relates directly to the second-division streaming expansion the client highlighted positively \u2014 be prepared to address mobile streaming quality.",
+      "numeric_values": [
+        3,
+        20
+      ],
+      "citations": [
+        "T-0146",
+        "T-0222",
+        "T-0243"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-222.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-243.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-146.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "llm_computed",
+          "detail": "20 not in tool output \u2014 appears to be 1/5*100 = 20%"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "support_health",
+      "claim": "No open support tickets currently. All tickets are closed.",
+      "numeric_values": [],
+      "citations": [],
+      "source_tool": "get_support_summary",
+      "_empty_citations": true,
+      "verification": "passed"
+    },
+    {
+      "section": "relationship_context",
+      "claim": "Last meeting was a relationship lunch on 2026-09-18 with the Brenmoor commercial director. The tone was positive: streaming expansion praised, renewal 'basically agreed' at ~+10%, integrity alerts valued. Tomas was actioned to send renewal paperwork.",
+      "numeric_values": [],
+      "citations": [
+        "N-006"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-18.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-9.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "relationship_context",
+      "claim": "An integrity review meeting on 2026-04-02 with the Brenmoor integrity officer confirmed satisfaction with alert volumes and reporting format. Two cases were escalated to the league disciplinary panel during the season.",
+      "numeric_values": [
+        2
+      ],
+      "citations": [
+        "N-007"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-4.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "risks",
+      "claim": "The contract expires in 60 days with no auto-renew and the notice deadline has already passed. If the board does not approve the renewal before 2026-12-31, the contract will lapse and \u20ac235,000 ARR is at risk.",
+      "numeric_values": [
+        60,
+        235000
+      ],
+      "citations": [
+        "K-0005",
+        "O-0003"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-31.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "risks",
+      "claim": "Live Streaming YoY usage declined -24.2% despite the client's positive perception of 'massive' growth. If the client reviews historical data, the YoY figure could undermine the case for a price increase. Be ready to contextualize the recent uptick of 24.0%.",
+      "numeric_values": [
+        -24.2,
+        24.0
+      ],
+      "citations": [
+        "N-006",
+        "U-00256",
+        "U-00260",
+        "U-00264"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "risks",
+      "claim": "Ticket T-0222 (stream buffering on mobile for second-division matches) received a CSAT of only 3. Since second-division streaming is the client's key growth area, unresolved quality issues here could jeopardize renewal sentiment.",
+      "numeric_values": [
+        3
+      ],
+      "citations": [
+        "T-0222",
+        "N-006"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-222.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Confirm whether renewal paperwork has been sent to Brenmoor as actioned in the 2026-09-18 meeting note. The expected close date is 2026-12-15 and the opportunity is at Proposal stage awaiting board approval.",
+      "numeric_values": [],
+      "citations": [
+        "N-006",
+        "O-0003"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-18.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-15.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-9.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Proactively inquire about the board approval timeline. With 60 days to contract end and no auto-renew, escalate internally if approval is delayed past early December.",
+      "numeric_values": [
+        60
+      ],
+      "citations": [
+        "K-0005",
+        "O-0003"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "passed"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Prepare to discuss the mobile streaming buffering issue (T-0222, CSAT 3) and confirm it has been fully resolved, especially given expanded second-division streaming.",
+      "numeric_values": [
+        3
+      ],
+      "citations": [
+        "T-0222",
+        "N-006"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-222.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Consider discussing a higher streaming tier or adjusted overage terms in the renewal, given that STREAM exceeded its included allowance in 5 months and second-division coverage is expanding.",
+      "numeric_values": [
+        5
+      ],
+      "citations": [
+        "K-0005",
+        "N-006"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "No previous ARR (prev_arr_eur) or ARR change percentage is available for contract K-0005, so historical pricing trend cannot be assessed.",
+      "numeric_values": [],
+      "citations": [
+        "K-0005"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-5.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "9 closed support tickets have no CSAT score recorded. Only 7 responses out of 10 tickets were captured (70.0% response rate), limiting confidence in the CSAT average of 4.14.",
+      "numeric_values": [
+        9,
+        7,
+        10,
+        70.0,
+        4.14
+      ],
+      "citations": [
+        "T-0146",
+        "T-0243"
+      ],
+      "source_tool": "check_data_quality",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "llm_computed",
+          "detail": "9 not in tool output \u2014 appears to be 1 + 7.6 = 9"
+        }
+      ],
+      "flag_reason": "LLM-computed value"
+    }
+  ],
+  "tool_outputs": {
+    "get_client_profile": {
+      "data": {
+        "client_id": "C003",
+        "client_name": "Brenmoor Football League",
+        "segment": "League/Federation",
+        "country": "NL",
+        "account_owner": "Tomas Ferreira",
+        "customer_since": "2020-08-01",
+        "tier": "Core"
+      },
+      "row_ids": [
+        "C003"
+      ]
+    },
+    "get_contract_status": {
+      "data": {
+        "active_contracts": [
+          {
+            "contract_id": "K-0005",
+            "contract_type": "renewal",
+            "start_date": "2024-01-01",
+            "end_date": "2026-12-31",
+            "days_to_end": 60,
+            "notice_deadline": "2026-10-02",
+            "days_until_notice": null,
+            "notice_passed": true,
+            "auto_renew": "N",
+            "arr_eur": 235000,
+            "products": [
+              {
+                "line_id": "L-00015",
+                "product_id": "STREAM",
+                "annual_fee_eur": 110000,
+                "included_units_monthly": 600,
+                "overage_rate_eur": 55.0
+              },
+              {
+                "line_id": "L-00016",
+                "product_id": "STATS_ARCHIVE",
+                "annual_fee_eur": 40000,
+                "included_units_monthly": 200,
+                "overage_rate_eur": 50.0
+              },
+              {
+                "line_id": "L-00017",
+                "product_id": "INTEGRITY",
+                "annual_fee_eur": 50000,
+                "included_units_monthly": 300,
+                "overage_rate_eur": 30.0
+              },
+              {
+                "line_id": "L-00018",
+                "product_id": "FAN_INSIGHTS",
+                "annual_fee_eur": 35000,
+                "included_units_monthly": 25,
+                "overage_rate_eur": 400.0
+              }
+            ],
+            "prev_arr_eur": null,
+            "arr_change_pct": null
+          }
+        ],
+        "pending_contracts": [],
+        "total_arr": 235000,
+        "has_active_contract": true
+      },
+      "row_ids": [
+        "K-0005",
+        "L-00015",
+        "L-00016",
+        "L-00017",
+        "L-00018"
+      ]
+    },
+    "get_usage_trend": {
+      "data": {
+        "products": {
+          "FAN_INSIGHTS": {
+            "product_name": "Fan Engagement Analytics",
+            "usage_unit": "active dashboard users",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00169"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00173"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00177"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00181"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00185"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00189"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00193"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00197"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00201"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00205"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00209"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 16.0,
+                "included_units": 25.0,
+                "utilization_pct": 64.0,
+                "usage_id": "U-00213"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00217"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00221"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00225"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00229"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00233"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00237"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00241"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 17.0,
+                "included_units": 25.0,
+                "utilization_pct": 68.0,
+                "usage_id": "U-00245"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00249"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00253"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00257"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 18.0,
+                "included_units": 25.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00261"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": 8.1,
+            "recent_vs_prior_pct": 1.9,
+            "months_over_included": 0,
+            "over_included_months": [],
+            "avg_utilization_pct": 71.3,
+            "data_gaps": []
+          },
+          "INTEGRITY": {
+            "product_name": "Integrity Monitoring",
+            "usage_unit": "matches monitored",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 262.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.3,
+                "usage_id": "U-00170"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 282.0,
+                "included_units": 300.0,
+                "utilization_pct": 94.0,
+                "usage_id": "U-00174"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 265.0,
+                "included_units": 300.0,
+                "utilization_pct": 88.3,
+                "usage_id": "U-00178"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 265.0,
+                "included_units": 300.0,
+                "utilization_pct": 88.3,
+                "usage_id": "U-00182"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 262.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.3,
+                "usage_id": "U-00186"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 253.0,
+                "included_units": 300.0,
+                "utilization_pct": 84.3,
+                "usage_id": "U-00190"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 233.0,
+                "included_units": 300.0,
+                "utilization_pct": 77.7,
+                "usage_id": "U-00194"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 193.0,
+                "included_units": 300.0,
+                "utilization_pct": 64.3,
+                "usage_id": "U-00198"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 191.0,
+                "included_units": 300.0,
+                "utilization_pct": 63.7,
+                "usage_id": "U-00202"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 244.0,
+                "included_units": 300.0,
+                "utilization_pct": 81.3,
+                "usage_id": "U-00206"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 262.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.3,
+                "usage_id": "U-00210"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 256.0,
+                "included_units": 300.0,
+                "utilization_pct": 85.3,
+                "usage_id": "U-00214"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 262.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.3,
+                "usage_id": "U-00218"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 290.0,
+                "included_units": 300.0,
+                "utilization_pct": 96.7,
+                "usage_id": "U-00222"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 263.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.7,
+                "usage_id": "U-00226"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 261.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.0,
+                "usage_id": "U-00230"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 261.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.0,
+                "usage_id": "U-00234"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 246.0,
+                "included_units": 300.0,
+                "utilization_pct": 82.0,
+                "usage_id": "U-00238"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 248.0,
+                "included_units": 300.0,
+                "utilization_pct": 82.7,
+                "usage_id": "U-00242"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 197.0,
+                "included_units": 300.0,
+                "utilization_pct": 65.7,
+                "usage_id": "U-00246"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 186.0,
+                "included_units": 300.0,
+                "utilization_pct": 62.0,
+                "usage_id": "U-00250"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 244.0,
+                "included_units": 300.0,
+                "utilization_pct": 81.3,
+                "usage_id": "U-00254"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 279.0,
+                "included_units": 300.0,
+                "utilization_pct": 93.0,
+                "usage_id": "U-00258"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 262.0,
+                "included_units": 300.0,
+                "utilization_pct": 87.3,
+                "usage_id": "U-00262"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": 2.7,
+            "recent_vs_prior_pct": 24.4,
+            "months_over_included": 0,
+            "over_included_months": [],
+            "avg_utilization_pct": 78.7,
+            "data_gaps": []
+          },
+          "STATS_ARCHIVE": {
+            "product_name": "Historical Stats Archive",
+            "usage_unit": "queries (thousands)",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 140.0,
+                "included_units": 200.0,
+                "utilization_pct": 70.0,
+                "usage_id": "U-00171"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 154.0,
+                "included_units": 200.0,
+                "utilization_pct": 77.0,
+                "usage_id": "U-00175"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 141.0,
+                "included_units": 200.0,
+                "utilization_pct": 70.5,
+                "usage_id": "U-00179"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 145.0,
+                "included_units": 200.0,
+                "utilization_pct": 72.5,
+                "usage_id": "U-00183"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 152.0,
+                "included_units": 200.0,
+                "utilization_pct": 76.0,
+                "usage_id": "U-00187"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 146.0,
+                "included_units": 200.0,
+                "utilization_pct": 73.0,
+                "usage_id": "U-00191"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 132.0,
+                "included_units": 200.0,
+                "utilization_pct": 66.0,
+                "usage_id": "U-00195"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 112.0,
+                "included_units": 200.0,
+                "utilization_pct": 56.0,
+                "usage_id": "U-00199"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 100.0,
+                "included_units": 200.0,
+                "utilization_pct": 50.0,
+                "usage_id": "U-00203"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 138.0,
+                "included_units": 200.0,
+                "utilization_pct": 69.0,
+                "usage_id": "U-00207"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 154.0,
+                "included_units": 200.0,
+                "utilization_pct": 77.0,
+                "usage_id": "U-00211"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 156.0,
+                "included_units": 200.0,
+                "utilization_pct": 78.0,
+                "usage_id": "U-00215"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 149.0,
+                "included_units": 200.0,
+                "utilization_pct": 74.5,
+                "usage_id": "U-00219"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 169.0,
+                "included_units": 200.0,
+                "utilization_pct": 84.5,
+                "usage_id": "U-00223"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 149.0,
+                "included_units": 200.0,
+                "utilization_pct": 74.5,
+                "usage_id": "U-00227"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 147.0,
+                "included_units": 200.0,
+                "utilization_pct": 73.5,
+                "usage_id": "U-00231"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 156.0,
+                "included_units": 200.0,
+                "utilization_pct": 78.0,
+                "usage_id": "U-00235"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 164.0,
+                "included_units": 200.0,
+                "utilization_pct": 82.0,
+                "usage_id": "U-00239"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 144.0,
+                "included_units": 200.0,
+                "utilization_pct": 72.0,
+                "usage_id": "U-00243"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 117.0,
+                "included_units": 200.0,
+                "utilization_pct": 58.5,
+                "usage_id": "U-00247"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 115.0,
+                "included_units": 200.0,
+                "utilization_pct": 57.5,
+                "usage_id": "U-00251"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 148.0,
+                "included_units": 200.0,
+                "utilization_pct": 74.0,
+                "usage_id": "U-00255"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 162.0,
+                "included_units": 200.0,
+                "utilization_pct": 81.0,
+                "usage_id": "U-00259"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 166.0,
+                "included_units": 200.0,
+                "utilization_pct": 83.0,
+                "usage_id": "U-00263"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": 7.6,
+            "recent_vs_prior_pct": 26.6,
+            "months_over_included": 0,
+            "over_included_months": [],
+            "avg_utilization_pct": 71.0,
+            "data_gaps": []
+          },
+          "STREAM": {
+            "product_name": "Live Streaming",
+            "usage_unit": "streamed hours",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 580.0,
+                "included_units": 600.0,
+                "utilization_pct": 96.7,
+                "usage_id": "U-00172"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 640.0,
+                "included_units": 600.0,
+                "utilization_pct": 106.7,
+                "usage_id": "U-00176"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 603.0,
+                "included_units": 600.0,
+                "utilization_pct": 100.5,
+                "usage_id": "U-00180"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 587.0,
+                "included_units": 600.0,
+                "utilization_pct": 97.8,
+                "usage_id": "U-00184"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 624.0,
+                "included_units": 600.0,
+                "utilization_pct": 104.0,
+                "usage_id": "U-00188"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 608.0,
+                "included_units": 600.0,
+                "utilization_pct": 101.3,
+                "usage_id": "U-00192"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 544.0,
+                "included_units": 600.0,
+                "utilization_pct": 90.7,
+                "usage_id": "U-00196"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 453.0,
+                "included_units": 600.0,
+                "utilization_pct": 75.5,
+                "usage_id": "U-00200"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 415.0,
+                "included_units": 600.0,
+                "utilization_pct": 69.2,
+                "usage_id": "U-00204"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 522.0,
+                "included_units": 600.0,
+                "utilization_pct": 87.0,
+                "usage_id": "U-00208"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 577.0,
+                "included_units": 600.0,
+                "utilization_pct": 96.2,
+                "usage_id": "U-00212"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 570.0,
+                "included_units": 600.0,
+                "utilization_pct": 95.0,
+                "usage_id": "U-00216"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 578.0,
+                "included_units": 600.0,
+                "utilization_pct": 96.3,
+                "usage_id": "U-00220"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 619.0,
+                "included_units": 600.0,
+                "utilization_pct": 103.2,
+                "usage_id": "U-00224"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 577.0,
+                "included_units": 600.0,
+                "utilization_pct": 96.2,
+                "usage_id": "U-00228"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 565.0,
+                "included_units": 600.0,
+                "utilization_pct": 94.2,
+                "usage_id": "U-00232"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 584.0,
+                "included_units": 600.0,
+                "utilization_pct": 97.3,
+                "usage_id": "U-00236"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 443.0,
+                "included_units": 600.0,
+                "utilization_pct": 73.8,
+                "usage_id": "U-00240"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 394.0,
+                "included_units": 600.0,
+                "utilization_pct": 65.7,
+                "usage_id": "U-00244"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 345.0,
+                "included_units": 600.0,
+                "utilization_pct": 57.5,
+                "usage_id": "U-00248"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 303.0,
+                "included_units": 600.0,
+                "utilization_pct": 50.5,
+                "usage_id": "U-00252"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 412.0,
+                "included_units": 600.0,
+                "utilization_pct": 68.7,
+                "usage_id": "U-00256"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 445.0,
+                "included_units": 600.0,
+                "utilization_pct": 74.2,
+                "usage_id": "U-00260"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 435.0,
+                "included_units": 600.0,
+                "utilization_pct": 72.5,
+                "usage_id": "U-00264"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": -24.2,
+            "recent_vs_prior_pct": 24.0,
+            "months_over_included": 5,
+            "over_included_months": [
+              "2024-12",
+              "2025-01",
+              "2025-03",
+              "2025-04",
+              "2025-12"
+            ],
+            "avg_utilization_pct": 64.8,
+            "data_gaps": []
+          }
+        }
+      },
+      "row_ids": [
+        "U-00169",
+        "U-00173",
+        "U-00177",
+        "U-00181",
+        "U-00185",
+        "U-00189",
+        "U-00193",
+        "U-00197",
+        "U-00201",
+        "U-00205",
+        "U-00209",
+        "U-00213",
+        "U-00217",
+        "U-00221",
+        "U-00225",
+        "U-00229",
+        "U-00233",
+        "U-00237",
+        "U-00241",
+        "U-00245",
+        "U-00249",
+        "U-00253",
+        "U-00257",
+        "U-00261",
+        "U-00170",
+        "U-00174",
+        "U-00178",
+        "U-00182",
+        "U-00186",
+        "U-00190",
+        "U-00194",
+        "U-00198",
+        "U-00202",
+        "U-00206",
+        "U-00210",
+        "U-00214",
+        "U-00218",
+        "U-00222",
+        "U-00226",
+        "U-00230",
+        "U-00234",
+        "U-00238",
+        "U-00242",
+        "U-00246",
+        "U-00250",
+        "U-00254",
+        "U-00258",
+        "U-00262",
+        "U-00171",
+        "U-00175",
+        "U-00179",
+        "U-00183",
+        "U-00187",
+        "U-00191",
+        "U-00195",
+        "U-00199",
+        "U-00203",
+        "U-00207",
+        "U-00211",
+        "U-00215",
+        "U-00219",
+        "U-00223",
+        "U-00227",
+        "U-00231",
+        "U-00235",
+        "U-00239",
+        "U-00243",
+        "U-00247",
+        "U-00251",
+        "U-00255",
+        "U-00259",
+        "U-00263",
+        "U-00172",
+        "U-00176",
+        "U-00180",
+        "U-00184",
+        "U-00188",
+        "U-00192",
+        "U-00196",
+        "U-00200",
+        "U-00204",
+        "U-00208",
+        "U-00212",
+        "U-00216",
+        "U-00220",
+        "U-00224",
+        "U-00228",
+        "U-00232",
+        "U-00236",
+        "U-00240",
+        "U-00244",
+        "U-00248",
+        "U-00252",
+        "U-00256",
+        "U-00260",
+        "U-00264"
+      ]
+    },
+    "get_support_summary": {
+      "data": {
+        "window": {
+          "start": "2025-11-01",
+          "end": "2026-11-01",
+          "days": 365
+        },
+        "total_tickets": 10,
+        "by_priority": {
+          "P3": 5,
+          "P2": 3,
+          "P4": 2
+        },
+        "by_category": {
+          "Integration": 4,
+          "Latency": 2,
+          "Feature request": 2,
+          "Outage": 2
+        },
+        "prev_window_total": 10,
+        "prev_by_priority": {
+          "P2": 4,
+          "P3": 5,
+          "P4": 1
+        },
+        "ticket_change_abs": 0,
+        "change_pct": 0.0,
+        "open_tickets": [],
+        "avg_csat": 4.14,
+        "csat_response_rate": 70.0,
+        "csat_responses": 7,
+        "prev_avg_csat": 4.25,
+        "csat_change": -0.11,
+        "notable_tickets": [
+          {
+            "ticket_id": "T-0146",
+            "priority": "P2",
+            "category": "Latency",
+            "subject": "Increased response times on API",
+            "product_id": "STREAM",
+            "status": "closed",
+            "csat_score": null
+          },
+          {
+            "ticket_id": "T-0222",
+            "priority": "P2",
+            "category": "Outage",
+            "subject": "Stream buffering on mobile app for second-division matches",
+            "product_id": "STREAM",
+            "status": "closed",
+            "csat_score": 3
+          },
+          {
+            "ticket_id": "T-0243",
+            "priority": "P2",
+            "category": "Outage",
+            "subject": "Feed unavailable for 20 minutes",
+            "product_id": "STATS_ARCHIVE",
+            "status": "closed",
+            "csat_score": null
+          }
+        ]
+      },
+      "row_ids": [
+        "T-0142",
+        "T-0146",
+        "T-0175",
+        "T-0191",
+        "T-0213",
+        "T-0222",
+        "T-0229",
+        "T-0233",
+        "T-0243",
+        "T-0258"
+      ]
+    },
+    "get_opportunities": {
+      "data": {
+        "opportunities": [
+          {
+            "opp_id": "O-0003",
+            "client_id": "C003",
+            "opp_type": "renewal",
+            "product_id": "",
+            "stage": "Proposal",
+            "amount_eur": 258500,
+            "created_date": "2026-08-01",
+            "expected_close_date": "2026-12-15",
+            "owner": "Tomas Ferreira",
+            "next_step": "Awaiting client board approval"
+          }
+        ],
+        "open_count": 1,
+        "total_pipeline_eur": 258500,
+        "current_arr_eur": 235000,
+        "arr_vs_pipeline_gap": -23500
+      },
+      "row_ids": [
+        "O-0003"
+      ]
+    },
+    "get_meeting_notes": {
+      "data": {
+        "notes": [
+          {
+            "note_id": "N-006",
+            "client_id": "C003",
+            "meeting_date": "2026-09-18",
+            "author": "Tomas Ferreira",
+            "title": "Relationship lunch",
+            "body": "# Relationship lunch: Brenmoor League\n\nDate: 2026-09-18\nAuthor: Tomas Ferreira\n\nAttendees: Brenmoor commercial director, Tomas Ferreira.\n\n- Commercial director said streaming usage is \"up massively\" since they moved all second-division matches onto our streams this season, and they are delighted.\n- Renewal \"basically agreed\" at around +10%, pending their board.\n- Integrity alerts continue to be valued by the league.\n\nActions: Tomas to send renewal paperwork.\n"
+          },
+          {
+            "note_id": "N-007",
+            "client_id": "C003",
+            "meeting_date": "2026-04-02",
+            "author": "Tomas Ferreira",
+            "title": "Integrity review",
+            "body": "# Integrity review: Brenmoor Football League\n\nDate: 2026-04-02\nAuthor: Tomas Ferreira\n\nAttendees: Brenmoor integrity officer, Tomas Ferreira, integrity analyst.\n\n- Reviewed alert volumes for the season; two cases escalated to the league disciplinary panel.\n- League happy with reporting format.\n\nActions: none.\n"
+          }
+        ],
+        "count": 2
+      },
+      "row_ids": [
+        "N-006",
+        "N-007"
+      ]
+    },
+    "check_data_quality": {
+      "data": {
+        "issues": [
+          {
+            "type": "blank_csat",
+            "detail": "9 closed tickets have no CSAT score"
+          }
+        ],
+        "issue_count": 1
+      },
+      "row_ids": []
+    }
+  }
+}

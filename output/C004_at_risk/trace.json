@@ -1,0 +1,42 @@
+{
+  "client_id": "C004",
+  "trigger": "at_risk",
+  "steps": [
+    {
+      "step": "plan",
+      "elapsed_s": 3.53,
+      "detail": null
+    },
+    {
+      "step": "tools",
+      "elapsed_s": 0.013,
+      "detail": "8 tools"
+    },
+    {
+      "step": "write",
+      "elapsed_s": 35.27,
+      "detail": "15 claims"
+    },
+    {
+      "step": "verify",
+      "elapsed_s": 0.0,
+      "detail": "9 passed, 6 flagged"
+    },
+    {
+      "step": "render",
+      "elapsed_s": 0.0,
+      "detail": null
+    },
+    {
+      "step": "judge",
+      "elapsed_s": 14.045,
+      "detail": "overall: 5/5"
+    }
+  ],
+  "total_elapsed_s": 52.862,
+  "llm_calls": 3,
+  "claims_total": 15,
+  "claims_passed": 9,
+  "claims_flagged": 6,
+  "judge_overall": 5
+}

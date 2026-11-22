@@ -1,0 +1,84 @@
+as_of: "2026-11-01"
+
+cases:
+  - id: c1_risk
+    client: "C001"
+    trigger: at_risk
+    context: "Usage feels down"
+    expect:
+      client_id: C001
+      client_name: Halden Bet
+    facts:
+      total_arr: 752000
+      contract_end: "2027-01-31"
+      notice_deadline: "2026-12-02"
+      days_until_notice: 31
+      auto_renew: "Y"
+      open_tickets: 2
+      avg_csat: 2.22
+      total_tickets_current: 12
+      ticket_change_pct: 500.0
+      renewal_opp_amount: 541500
+      arr_vs_pipeline_gap: 210500
+      segment: Sportsbook
+
+  - id: c1_renew
+    client: "Halden Bet"
+    trigger: renewal
+    expect:
+      client_id: C001
+      client_name: Halden Bet
+    facts:
+      total_arr: 752000
+      contract_end: "2027-01-31"
+      notice_deadline: "2026-12-02"
+      days_until_notice: 31
+      auto_renew: "Y"
+      renewal_opp_amount: 541500
+      avg_csat: 2.22
+
+  - id: c3_upsell
+    client: "Brenmoor"
+    trigger: upsell
+    expect:
+      client_id: C003
+      client_name: Brenmoor League
+    facts:
+      total_arr: 235000
+      segment: "League/Federation"
+      contract_end: "2026-12-31"
+      notice_deadline: "2026-10-02"
+      auto_renew: "N"
+
+  - id: c3_meeting
+    client: "C003"
+    trigger: meeting_prep
+    expect:
+      client_id: C003
+      client_name: Brenmoor League
+    facts:
+      total_arr: 235000
+      segment: "League/Federation"
+      meeting_note_count: 2
+
+  - id: c4_risk
+    client: "C004"
+    trigger: at_risk
+    expect:
+      client_id: C004
+      client_name: Quillon Esports
+    facts:
+      total_arr: 48000
+      segment: "Fantasy & Gaming"
+      tier: Growth
+
+  - id: c4_renew
+    client: "Quillon Esports"
+    trigger: renewal
+    expect:
+      client_id: C004
+      client_name: Quillon Esports
+    facts:
+      total_arr: 48000
+      segment: "Fantasy & Gaming"
+      contract_end: "2027-08-31"

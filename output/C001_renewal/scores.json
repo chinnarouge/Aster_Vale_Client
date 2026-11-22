@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "The briefing covers all critical renewal dimensions: contract terms and notice deadline, usage trends across all four products, support health with detailed ticket analysis, relationship context from meeting notes, competitive threat assessment, growth opportunities, risks, and concrete next steps. The account snapshot, peer comparison context, and data gaps section round out a thorough picture."
+  },
+  "accuracy": {
+    "score": 4,
+    "comment": "Claims are well-cited to specific evidence IDs and the evidence summary confirms the tool outputs used. The numerous [UNVERIFIED] tags are concerning at first glance, but many appear to be appropriately flagged granular details that may come from sub-fields of the retrieved data rather than fabricated claims. The quantitative data points (usage percentages, ARR figures, ticket counts) align logically with each other and with the tool outputs listed. One minor concern: stating Halden is '#1 ARR client' without clear peer comparison evidence showing rank explicitly, though arr_rank is listed in peer_comparison output. Deducting slightly for the volume of unverified tags which could indicate some claims extrapolate beyond what tools directly returned."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Next steps are exceptionally well-structured with specific deadlines (by 2026-11-08, before 2026-12-02), named tickets to resolve, concrete renewal option scenarios (full renewal with SLA improvements, reduced scope, value-add bundle), and strategic guidance on competitive intelligence gathering. The urgency framing is appropriate given the 31-day notice deadline. Each recommendation is tied back to specific evidence."
+  },
+  "data_transparency": {
+    "score": 5,
+    "comment": "Excellent transparency throughout. The briefing explicitly flags [UNVERIFIED] claims, identifies missing CSAT scores on 3 tickets, notes the absence of prior-window CSAT for trend analysis, flags the lack of CRM opportunity pipeline data, and includes a dedicated 'Data Gaps & Confidence' section. The CSAT average is contextualized with response rate (9/12). This is exemplary handling of uncertainty."
+  },
+  "overall": 5,
+  "summary": "An outstanding renewal briefing that comprehensively synthesizes usage decline, support deterioration, competitive threat, and contract urgency into a clear risk narrative with highly actionable next steps, while maintaining excellent data transparency throughout."
+}

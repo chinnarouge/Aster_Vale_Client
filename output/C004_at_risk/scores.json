@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "The briefing thoroughly covers all dimensions relevant to an at_risk trigger: account snapshot, contract/renewal position, usage trends with peer benchmarking, support health, relationship context, growth opportunities, risks, and data gaps. Every angle is addressed comprehensively."
+  },
+  "accuracy": {
+    "score": 4,
+    "comment": "Claims are well-cited and internally consistent. The usage figures, contract details, peer comparisons, and segment averages all align logically. However, nearly every section is marked [UNVERIFIED: no source found], which makes it difficult to confirm accuracy against raw evidence. The calculations (e.g., 33.1% average utilization) appear plausible given the data described. One minor concern: citing C006 and C019 for peer comparison data without clarifying these are peer client records could be clearer."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Recommended next steps are specific, time-bound (within 2 weeks), and directly tied to the identified risks. The suggestion to share peer benchmarks is concrete and practical. The recommendation to create an open opportunity addresses the pipeline gap. Each action is linked to supporting data points."
+  },
+  "data_transparency": {
+    "score": 5,
+    "comment": "The briefing excels at flagging data gaps: only 2 months of usage history, no meeting notes, no CSAT data, no support tickets, no YoY comparison possible. The [UNVERIFIED] tags throughout, while somewhat excessive, demonstrate a commitment to transparency. The 'Data Gaps & Confidence' section is explicit about limitations. The briefing correctly notes the ambiguity of zero support tickets for a new client."
+  },
+  "overall": 5,
+  "summary": "An exemplary at_risk briefing that comprehensively identifies the low-adoption danger signals for a brand-new client, contextualizes them against peer benchmarks, transparently flags all data limitations, and provides specific, actionable next steps to re-engage the account."
+}

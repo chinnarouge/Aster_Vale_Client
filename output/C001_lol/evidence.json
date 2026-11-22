@@ -1,0 +1,183 @@
+{
+  "as_of": "2026-11-01",
+  "tools_run": [
+    "get_client_profile",
+    "check_data_quality"
+  ],
+  "tools_summary": {
+    "get_client_profile": {
+      "row_ids": [
+        "C001"
+      ],
+      "keys": [
+        "client_id",
+        "client_name",
+        "segment",
+        "country",
+        "account_owner",
+        "customer_since",
+        "tier"
+      ]
+    },
+    "check_data_quality": {
+      "row_ids": [],
+      "keys": [
+        "issues",
+        "issue_count"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "section": "headline",
+      "claim": "Halden Bet is a Strategic-tier Sportsbook client based in GB, managed by Maya Lindgren, and has been a customer since 2021-02-01.",
+      "numeric_values": [],
+      "citations": [
+        "C001"
+      ],
+      "source_tool": "get_client_profile",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2021.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "account_snapshot",
+      "claim": "Halden Bet has been a customer for approximately 5 years and 9 months (since 2021-02-01) and is classified as a Strategic account in the Sportsbook segment.",
+      "numeric_values": [],
+      "citations": [
+        "C001"
+      ],
+      "source_tool": "get_client_profile",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2021.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "5.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "9.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "support_health",
+      "claim": "3 closed tickets have no CSAT score recorded, which limits visibility into client satisfaction with support interactions.",
+      "numeric_values": [
+        3
+      ],
+      "citations": [],
+      "source_tool": "check_data_quality",
+      "_empty_citations": true,
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "missing_citation",
+          "detail": "claim has numeric values but no citations"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "3 not found in any tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "No contract, usage, opportunity, meeting note, or product data was returned by any tools. The briefing lacks ARR, contract renewal dates, usage trends, pipeline opportunities, and recent relationship context. A comprehensive data refresh is needed to prepare a meaningful briefing for Halden Bet.",
+      "numeric_values": [],
+      "citations": [
+        "C001"
+      ],
+      "source_tool": "get_client_profile",
+      "verification": "passed"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "3 closed support tickets are missing CSAT scores, reducing the reliability of any support health assessment for this Strategic account.",
+      "numeric_values": [
+        3
+      ],
+      "citations": [],
+      "source_tool": "check_data_quality",
+      "_empty_citations": true,
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "missing_citation",
+          "detail": "claim has numeric values but no citations"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "3 not found in any tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Maya Lindgren should ensure CSAT scores are collected for the 3 closed tickets missing feedback, and request updated contract, usage, and opportunity data to enable a complete account review for Halden Bet.",
+      "numeric_values": [
+        3
+      ],
+      "citations": [
+        "C001"
+      ],
+      "source_tool": "check_data_quality",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "3 not found in any tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    }
+  ],
+  "tool_outputs": {
+    "get_client_profile": {
+      "data": {
+        "client_id": "C001",
+        "client_name": "Halden Bet",
+        "segment": "Sportsbook",
+        "country": "GB",
+        "account_owner": "Maya Lindgren",
+        "customer_since": "2021-02-01",
+        "tier": "Strategic"
+      },
+      "row_ids": [
+        "C001"
+      ]
+    },
+    "check_data_quality": {
+      "data": {
+        "issues": [
+          {
+            "type": "blank_csat",
+            "detail": "3 closed tickets have no CSAT score"
+          }
+        ],
+        "issue_count": 1
+      },
+      "row_ids": []
+    }
+  }
+}

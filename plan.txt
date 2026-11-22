@@ -1,0 +1,1474 @@
+================================================================================
+CLIENT INTELLIGENCE AGENT — DISCOVERY REPORT & IMPLEMENTATION PLAN
+================================================================================
+Date: 2026-11-20 (data as_of: 2026-11-01)
+Status: Analysis complete. No code written. Awaiting approval to implement.
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+WHAT WE'RE BUILDING:
+A CLI agent that takes three inputs:
+  1. client   — name ("Halden Bet") OR id ("C001")
+  2. trigger  — renewal / meeting_prep / upsell / at_risk
+  3. rep_context — optional free text from the rep (e.g. "Usage feels down")
+
+The agent orchestrates: an LLM planner decides which tools to call based on
+the trigger and rep context, deterministic Python tools gather evidence from
+the SQLite database, an LLM writer produces the briefing, and a deterministic
+verifier checks every claim.
+
+Output:
+  1. A one-page Markdown briefing with cited claims.
+  2. A JSON evidence file containing all tool outputs and source row IDs.
+
+THE DATASET:
+  - 25 fictional clients across 6 segments (Sportsbook, Broadcaster, etc.)
+  - 8 products with different usage units (API calls, streamed hours, etc.)
+  - 46 contract rows (45 unique; K-0010 duplicated)
+  - After dedup: 24 active, 20 expired, 1 pending_signature
+  - 154 contract lines (all unique line_ids; no line-level duplicates)
+  - 1,991 usage records (Nov 2024 – Oct 2026)
+  - 289 support tickets (3 open, 286 closed)
+  - 19 CRM opportunities
+  - 14 meeting notes for 10 clients (15 clients have no notes)
+  - SQLite DB mirrors all CSVs exactly (row counts verified)
+
+TOP DATA-QUALITY ISSUES:
+  1. Duplicate contract: K-0010 (C006) appears twice in contracts table.
+  2. Duplicate usage: U-00422 and U-01991 are identical (C006/LIVE_DATA/2026-08).
+  3. CORRECTION: contract_lines has NO duplicate line_ids (154 unique).
+     The earlier "82 unique" was caused by a JOIN through the duplicated
+     K-0010 contract row, not actual line duplication.
+  4. Missing usage: C005 missing all 4 products for 2026-03.
+  5. C007 has no active contract — only expired K-0011 and pending K-0045.
+  6. C004 has only 2 months of usage (new client, started 2026-09).
+  7. 15 of 25 clients have zero meeting notes.
+  8. 106 of 286 closed tickets have no CSAT score.
+  9. C005's notice deadline already passed (2026-10-01, 31 days ago).
+  10. C003's notice deadline already passed (2026-10-02, 30 days ago).
+  11. C003 meeting note says streaming "up massively" but data shows decline.
+
+IS AN LLM NECESSARY?
+Not for calculations. Required only for:
+  - Interpreting free-text meeting notes (extracting interests, risks, concerns).
+  - Generating natural-language briefing prose from structured evidence.
+Everything else (calculations, joins, trend analysis, citations) is deterministic.
+
+RECOMMENDED ARCHITECTURE: Hybrid with LLM Orchestration.
+  - LLM planner decides which tools to call based on trigger + rep_context.
+  - Deterministic Python tools for all data retrieval and calculations.
+  - LLM writer generates the briefing from structured evidence.
+  - Deterministic verifier checks citations and numbers.
+  - The LLM reasons and writes. Python calculates and verifies.
+
+================================================================================
+1. ASSIGNMENT UNDERSTANDING
+================================================================================
+
+Aster Vale Sports Data sells sports data products (live feeds, odds, streaming,
+widgets, analytics, integrity monitoring) to business clients (sportsbooks,
+broadcasters, leagues, clubs, fantasy apps).
+
+Sales reps currently request manual analyst briefings before client interactions.
+This takes weeks. We automate it into one-click briefings.
+
+FOUR TRIGGERS:
+
+1. RENEWAL
+   - Rep is preparing for contract renewal negotiation.
+   - Needs: contract position, ARR history, notice deadline, usage trends
+     (growing/declining), overage exposure, support health, competitor signals,
+     existing renewal CRM opportunity.
+   - Key questions: What should I propose? Where is the risk? What leverage do
+     I have? What is the client likely to ask for?
+
+2. MEETING_PREP
+   - Rep has an upcoming client meeting.
+   - Needs: full account snapshot — who they are, what they buy, how they use
+     it, support history, open opportunities, what was discussed last time.
+   - Key questions: What do I need to know? What should I bring up? What
+     might they bring up?
+
+3. UPSELL
+   - Rep wants to grow the account.
+   - Needs: products client doesn't hold, segment fit, related products to
+     current holdings, existing CRM cross-sell/upsell opportunities, usage
+     patterns suggesting capacity for more, interests from meeting notes.
+   - Key questions: What should I pitch? Is there evidence they'd want it?
+     Is there already an opp in CRM?
+
+4. AT_RISK
+   - Rep suspects the client may churn or reduce spend.
+   - Needs: declining usage, unresolved P1/P2 tickets, low CSAT, competitor
+     mentions in notes, reduced renewal ARR proposals, negative meeting tone,
+     stalled opportunities.
+   - Key questions: How worried should I be? What signals are there? What
+     can I do about it?
+
+MUST-HAVES (from assignment brief):
+  M1. Single command: client + trigger -> briefing.md + evidence.json
+  M2. Deterministic tools: contract status, usage trends, whitespace,
+      support summary, meeting notes
+  M3. Trigger-driven planning (config or model, not client-specific code)
+  M4. Writer with citations + verifier checking numbers & claims
+  M5. Honest data handling: duplicates, gaps, conflicts disclosed
+  M6. Evaluation: 3+ clients, 2+ triggers each, automated fact-checks
+
+STRETCH GOALS (do only if time permits):
+  S1. Small UI (Streamlit/Gradio)
+  S2. Parallel specialists with trace logging
+  S3. New trigger via config only
+  S4. Meeting note vs data conflict surfacing
+  S5. Portfolio view (risk/growth ranking)
+  S6. LLM-as-judge scoring
+  S7. Unit tests + regression suite
+
+================================================================================
+2. COMPLETE DATA INVENTORY
+================================================================================
+
+TABLE               ROWS    UNIQUE PKs   CSV=DB   NOTES
+clients             25      25           YES
+products            8       8            YES
+contracts           46      45           YES      K-0010 duplicated (2 rows)
+contract_lines      154     154          YES      No line-level duplicates
+usage_monthly       1991    1991         YES      0 PK dupes; 1 business-key dupe (C006/LIVE_DATA/2026-08)
+support_tickets     289     289          YES
+crm_opportunities   19      19           YES
+meeting_notes_index 14      14           YES
+meeting_notes       14      14           YES      (in DB only, full text)
+
+Date range: Usage from 2024-11 to 2026-10 (24 months).
+Clients: 25 across 16 countries, 6 segments, 3 tiers.
+Contracts (deduplicated): 24 active (ARR 6,329,500), 20 expired, 1 pending.
+
+================================================================================
+3. TABLE-BY-TABLE ANALYSIS
+================================================================================
+
+--- 3.1 CLIENTS (25 rows) ---
+
+One row = one client account.
+PK: client_id (C001–C025).
+
+Segments: Sportsbook(6), League/Federation(6), Broadcaster(6),
+          Fantasy & Gaming(3), Data & Tech Platform(2), Club(2).
+Tiers: Core(11), Growth(9), Strategic(5).
+Countries: 16 unique (AT,CH,DE,DK,ES,FR,GB,IE,IT,LT,MT,NL,NO,PL,PT,SE).
+Account owners: Maya Lindgren, Jonas Weber, Tomas Ferreira,
+                Elif Aydin, Grace Okafor.
+Customer_since: ranges from 2019-11-01 (C005) to 2026-09-01 (C004).
+
+Client resolution: Reps will type informal names (e.g. "Halden Bet" or
+"Halden" or "C001"). Resolution should fuzzy-match client_name and also
+accept exact client_id. If ambiguous, return candidates and stop.
+
+--- 3.2 PRODUCTS (8 rows) ---
+
+PK: product_id.
+
+ID            Name                      Unit                  List Price   Segments
+LIVE_DATA     Live Match Data Feed      API calls (thousands) 60,000       Sportsbook;Broadcaster;F&G;D&TP
+ODDS_PRE      Pre-match Odds Feed       markets priced (k)    45,000       Sportsbook;D&TP
+ODDS_LIVE     In-play Odds Feed         markets priced (k)    75,000       Sportsbook
+STREAM        Live Streaming            streamed hours        55,000       Sportsbook;Broadcaster;League/Fed
+STATS_ARCHIVE Historical Stats Archive  queries (thousands)   20,000       Broadcaster;League/Fed;F&G;Club;D&TP
+WIDGETS       Match Visualisation       widget impressions(M) 30,000       Broadcaster;F&G;Club;Sportsbook;D&TP
+FAN_INSIGHTS  Fan Engagement Analytics  active dashboard users 17,500      League/Fed;Club;Broadcaster
+INTEGRITY     Integrity Monitoring      matches monitored     25,000       League/Fed;Sportsbook
+
+CRITICAL: Usage units differ by product. Never aggregate usage across products.
+ODDS_LIVE requires LIVE_DATA (prerequisite mentioned in description).
+often_bought_with enables cross-sell recommendations.
+
+--- 3.3 CONTRACTS (46 rows, 45 unique contract_ids) ---
+
+PK: contract_id. FK: client_id -> clients.
+
+Raw row counts: active(25), expired(20), pending_signature(1).
+After deduplication by contract_id: active(24), expired(20), pending(1).
+  Query: SELECT status, COUNT(*), SUM(CAST(arr_eur AS INTEGER))
+         FROM (SELECT DISTINCT contract_id, status, arr_eur FROM contracts)
+         GROUP BY status
+  Result: active=24, ARR=6,329,500. expired=20, ARR=5,600,000. pending=1, ARR=200,000.
+Total active ARR (deduplicated): EUR 6,329,500.
+
+DUPLICATE: K-0010 (C006, Tidewell Fantasy) appears twice — identical rows.
+  Both: renewal, 2025-03-01 to 2027-02-28, 24 months, auto_renew=Y,
+  notice=60 days, ARR=176,000, active, signed 2025-02-03.
+  -> Deduplicate by contract_id when querying.
+
+PENDING: K-0045 (C007, Varrow Racing Authority).
+  Start 2026-10-01, end 2028-09-30, 24 months, ARR=200,000.
+  Not signed. Previous contract K-0011 expired 2026-09-30.
+  Meeting note N-009 explains: legal reviewing data-rights clause.
+  -> C007 has NO active contract as of 2026-11-01.
+
+NOTICE DEADLINES (critical for renewal trigger):
+  Contract   Client  End Date    Notice  Deadline    Days Left  Status
+  K-0008     C005    2026-11-30  60d     2026-10-01  PASSED     Auto-renew=Y
+  K-0005     C003    2026-12-31  90d     2026-10-02  PASSED     Auto-renew=N !
+  K-0039     C022    2026-12-31  30d     2026-12-01  30 days    Auto-renew=Y
+  K-0002     C001    2027-01-31  60d     2026-12-02  31 days    Auto-renew=Y
+  K-0019     C011    2027-01-31  60d     2026-12-02  31 days    Auto-renew=N !
+  K-0010     C006    2027-02-28  60d     2026-12-30  59 days    Auto-renew=Y
+  K-0028     C016    2027-02-28  60d     2026-12-30  59 days    Auto-renew=Y
+  K-0035     C020    2027-02-28  60d     2026-12-30  59 days    Auto-renew=Y
+  K-0044     C025    2027-03-31  60d     2027-01-30  90 days    Auto-renew=N !
+
+  ! = auto_renew=N means contract expires if no renewal signed. High risk.
+
+ARR CHANGE AT RENEWAL (examples):
+  C001: K-0001 (692K) -> K-0002 (752K) = +8.67% increase.
+        But O-0001 proposes 541.5K = -28.0% reduction from current.
+  C003: K-0005 (235K) active. O-0003 proposes 258.5K = +10.0% increase.
+
+--- 3.4 CONTRACT LINES (154 rows, 154 unique line_ids) ---
+
+PK: line_id. FK: contract_id -> contracts, product_id -> products.
+
+CORRECTION: All 154 line_ids are unique. No duplicate lines exist in this table.
+  Query: SELECT line_id, COUNT(*) FROM contract_lines GROUP BY line_id HAVING COUNT(*)>1
+  Result: 0 rows.
+The earlier claim of "82 unique" was an error caused by JOINing through the
+duplicated K-0010 contract row, which doubled the result set.
+
+K-0010 has 3 contract lines: L-00031 (LIVE_DATA), L-00032 (STATS_ARCHIVE),
+L-00033 (WIDGETS). Each appears exactly once in contract_lines.
+When JOINing to contracts, use DISTINCT contract_id to avoid doubling.
+
+One row = one product on one contract.
+Contains: annual_fee_eur, included_units_monthly, overage_rate_eur_per_unit.
+These are essential for overage analysis (usage vs included volume).
+
+--- 3.5 USAGE_MONTHLY (1,991 rows, 1,990 unique) ---
+
+PK: usage_id. FK: client_id, product_id.
+Expected unique per: client_id + product_id + month.
+
+All 1991 usage_ids are unique (zero PK duplicates).
+BUSINESS-KEY DUPLICATE: C006/LIVE_DATA/2026-08 has two rows with
+  different PKs (U-00422, U-01991) but identical values (units_used=2176,
+  included_units=4000, source=metering). Same observation recorded twice.
+  -> Deduplicate by business key (client_id, product_id, month), not by PK.
+
+Coverage: 2024-11 to 2026-10 (24 months).
+All 25 clients have usage. C004 has only 2 months (new client Sep 2026).
+
+MISSING MONTHS:
+  C005: All 4 products missing for 2026-03.
+  Meeting note N-010 (2026-05-20) mentions C005 "could not find their March
+  usage statement" — explains the gap. Likely a metering/export issue.
+  No other clients have missing months (except C004 which starts late).
+
+Per data dictionary: missing row = unknown (not zero). Zero is recorded as 0.
+
+PRODUCTS PER CLIENT IN USAGE (count of distinct products used):
+  5 products: C009, C024
+  4 products: C001, C003, C005, C008, C010, C011, C013, C016, C023, C025
+  3 products: C002, C006, C007, C015, C017, C018, C019, C020, C021
+  2 products: C012, C014, C022
+  1 product:  C004
+
+--- 3.6 SUPPORT TICKETS (289 rows) ---
+
+PK: ticket_id. FK: client_id, product_id.
+Status: closed(286), open(3).
+Priority: P1(25), P2(56), P3(149), P4(59).
+Categories: Integration(70), Feature request(51), Latency(44),
+            Data accuracy(40), Access(32), Billing(29), Outage(23).
+
+OPEN TICKETS (as of 2026-11-01):
+  T-0284  C001  ODDS_LIVE   P1  Latency  "In-play latency spike during evening fixtures"
+  T-0279  C001  LIVE_DATA   P2  Data accuracy  "Missing corner and card events in live feed"
+  T-0286  C024  ODDS_LIVE   P4  Access   "New user accounts needed"
+
+CSAT: 109 missing (106 closed + 3 open). Response rate = 63% of closed tickets.
+
+LOWEST AVG CSAT: C001 at 2.2 (9 responses). Next lowest: C018 at 3.5.
+All others range 4.0 to 4.8. C001 is a clear outlier.
+
+HIGHEST TICKET VOLUME: C002(22), C003(20), C020(20), C005(18), C008(18).
+MOST P1 TICKETS: C001(5), C002(3), C019(3), C024(3).
+
+C001 is the most concerning: 5 P1s, 6 P2s, 2 open tickets (1 P1, 1 P2),
+avg CSAT 2.2. Combined with meeting notes showing competitor trial and
+ARR reduction proposal, strong at-risk signal.
+
+--- 3.7 CRM OPPORTUNITIES (19 rows) ---
+
+PK: opp_id. FK: client_id, product_id.
+
+CORRECTED COUNTS (re-verified from DB):
+  By type: cross_sell(8), renewal(7), upsell(3), new_business(1). Total: 19.
+  By stage: Qualification(5), Proposal(5), Negotiation(3), Closed Won(3),
+            Closed Lost(3). Total: 19.
+
+Key opportunities:
+  O-0001  C001  renewal     Negotiation  541,500  "reduced in-play scope"
+  O-0003  C003  renewal     Proposal     258,500  "board approval"
+  O-0005  C007  renewal     Negotiation  200,000  "legal review data-rights"
+  O-0006  C008  cross_sell  Proposal     85,000   WIDGETS
+  O-0007  C009  cross_sell  Qualification 120,000  STREAM
+  O-0009  C010  renewal     Qualification 484,000
+  O-0010  C011  renewal     Proposal     172,500  "women's competition"
+  O-0013  C016  cross_sell  Proposal     70,000   STREAM
+  O-0015  C019  upsell      Negotiation  18,000   WIDGETS
+  O-0018  C024  cross_sell  Qualification 50,000   WIDGETS
+  O-0019  C025  renewal     Proposal     144,000
+
+Closed Won: O-0004 (C004 new_business), O-0008 (C009 upsell), O-0011 (C013 upsell).
+Closed Lost (3, not 4 as originally stated):
+  O-0002 (C002/FAN_INSIGHTS), O-0012 (C015/ODDS_LIVE), O-0014 (C017/STREAM).
+
+Cross-sells (8): O-0002, O-0006, O-0007, O-0012, O-0013, O-0014, O-0016, O-0018.
+
+Important: If a CRM opp already exists for a product, the briefing should
+reference it rather than independently recommending the same thing.
+
+--- 3.8 MEETING NOTES (14 notes for 10 clients) ---
+
+Coverage by client:
+  C001: 3 notes (N-001, N-002, N-003)
+  C002: 2 notes (N-004, N-005)
+  C003: 2 notes (N-006, N-007)
+  C005: 1 note  (N-010)
+  C006: 1 note  (N-013)
+  C007: 1 note  (N-009)
+  C008: 1 note  (N-008)
+  C009: 1 note  (N-011)
+  C010: 1 note  (N-014)
+  C011: 1 note  (N-012)
+
+15 clients have NO meeting notes:
+  C004, C012, C013, C014, C015, C016, C017, C018, C019, C020,
+  C021, C022, C023, C024, C025.
+
+KEY FINDINGS FROM NOTES:
+
+  C001 (Halden Bet) — STRONG AT-RISK SIGNALS:
+    N-001 (Nov 2025): Happy overall, but raised price increase concern.
+    N-002 (Jun 2026): Complaints about in-play delays. Asked for service
+      credits. "Tone noticeably cooler."
+    N-003 (Oct 2026): Trialling another in-play odds supplier. Procurement
+      wants reduced scope. Budget pressure. Still positive on live data
+      and pre-match odds.
+
+  C002 (Corvane Media) — UPSELL OPPORTUNITY:
+    N-004 (Mar 2026): Streaming success, worried about overage bills.
+    N-005 (Aug 2026): Planning second-screen app, asked about embeddable
+      visualisations (=WIDGETS). Previous FAN_INSIGHTS declined for budget.
+
+  C003 (Brenmoor) — CONFLICTING DATA:
+    N-006 (Sep 2026): Commercial director says streaming usage "up massively"
+      since moving second-division matches to our streams. Renewal +10%.
+    ACTUAL DATA: Streaming usage DECLINING. 580 (Nov 2024) -> 435 (Oct 2026).
+      Peak was 640 (Dec 2024). Recent months: 303, 412, 445, 435.
+    -> This is a critical conflict. The briefing must surface it.
+       Possible explanation: "second-division" matches may have started mid-
+       season (the uptick from 303 to 412 in Aug 2026 could be this),
+       but overall trend is still down from prior year.
+
+  C007 (Varrow Racing) — CONTRACT GAP:
+    N-009 (Sep 2026): Renewal terms agreed commercially, legal reviewing
+      data-rights clause. Want service continuity.
+    -> K-0045 pending_signature. No active contract.
+
+  C008 (Greyhaven) — WIDGETS CROSS-SELL:
+    N-008 (Jul 2026): Presented widgets, strong interest. O-0006 in Proposal.
+
+  C009 (Pellucid Odds) — STREAMING EXPANSION:
+    N-011 (Oct 2026): Growth, want live streaming. O-0007 in Qualification.
+
+  C011 (Oakhurst Cricket) — RENEWAL EXPANSION:
+    N-012 (Aug 2026): Record season, want women's competition added.
+      O-0010 in Proposal, includes this.
+
+================================================================================
+4. DATA QUALITY FINDINGS TABLE
+================================================================================
+
+#   Table           Record(s)        Issue                               Severity  Handling
+1   contracts       K-0010           Duplicate row                       Medium    Deduplicate by contract_id
+2   usage_monthly   U-00422/U-01991  Business-key dupe (not PK dupe)     Medium    Deduplicate by (client,product,month)
+3   contract_lines  (none)           NO duplicates exist (154 unique)     N/A       JOINs to contracts must use DISTINCT contract_id
+4   usage_monthly   C005/2026-03     All 4 products missing              Low       Note as data gap; do not impute
+5   usage_monthly   C004             Only 2 months of history            Low       Flag short history; limit trend analysis
+6   contracts       K-0045 (C007)    pending_signature, no active        High      Report contract gap clearly
+7   support_tickets 106 closed       No CSAT score                       Low       Calculate avg CSAT from available only; note response rate
+8   contracts       K-0005 (C003)    Notice deadline passed (Oct 2)      High      Surface as urgent if renewal trigger
+9   contracts       K-0008 (C005)    Notice deadline passed (Oct 1)      Medium    Less urgent: auto_renew=Y
+10  meeting notes   15 clients       No notes available                  Low       State "no meeting notes available"
+11  notes vs data   C003 N-006       Streaming "up massively" vs decline High      Surface conflict explicitly
+
+================================================================================
+5. BUSINESS INTELLIGENCE THAT CAN BE DERIVED
+================================================================================
+
+--- 5.1 RENEWAL INTELLIGENCE ---
+
+Can determine:
+  - Active contract details (end date, ARR, auto-renew, notice period).
+  - Notice deadline and days remaining.
+  - ARR change from previous contract.
+  - Proposed renewal ARR from CRM opportunity (if exists).
+  - ARR change percentage at proposed renewal.
+  - Usage trends by product (recent 6 months vs prior 6 months,
+    or same months last year if 12+ months available).
+  - Overage months (usage > included_units).
+  - Open high-priority support tickets.
+  - CSAT trend.
+  - Meeting-note sentiment on renewal.
+  - Competitor mentions.
+
+Cannot determine:
+  - Internal client budget constraints (beyond what notes mention).
+  - Competitive pricing.
+  - Actual churn probability.
+
+Example calculation — C001 renewal:
+  Active contract: K-0002, ends 2027-01-31, ARR=752,000, auto_renew=Y.
+  Notice deadline: 2026-12-02 (31 days from as_of).
+  Previous ARR: 692,000 (K-0001). Last renewal: +8.67%.
+  Proposed renewal: O-0001, 541,500. Change from current: -28.0%.
+  Usage: ALL products declining (LIVE_DATA, ODDS_LIVE, ODDS_PRE, STREAM).
+  Open tickets: T-0284 (P1 latency), T-0279 (P2 data accuracy).
+  Avg CSAT: 2.2 (worst in portfolio).
+  Notes: Competitor trial, budget pressure, wants reduced in-play scope.
+
+--- 5.2 UPSELL / CROSS-SELL INTELLIGENCE ---
+
+Can determine:
+  - Products client does not hold (compare contract lines vs product catalogue).
+  - Segment fit (product.typical_segments vs client.segment).
+  - Related products (product.often_bought_with vs client's current products).
+  - Existing CRM opportunities for those products.
+  - Previously lost opportunities (don't re-recommend immediately).
+  - Peer adoption (how many same-segment clients hold each product).
+  - Meeting notes expressing interest in specific products.
+
+Example — C002 (Corvane Media, Broadcaster):
+  Holds: LIVE_DATA, STREAM, STATS_ARCHIVE.
+  Missing: WIDGETS, FAN_INSIGHTS, ODDS_PRE, ODDS_LIVE, INTEGRITY.
+  Segment fit for Broadcaster: WIDGETS(yes), FAN_INSIGHTS(yes),
+    STATS_ARCHIVE(already held).
+  WIDGETS: related to LIVE_DATA (held) and STATS_ARCHIVE (held).
+    Meeting note N-005 asks about "embeddable live match visualisations."
+    -> Strong signal.
+  FAN_INSIGHTS: O-0002 Closed Lost "no budget this year" (2025).
+    -> Don't push hard; note it was declined recently.
+
+--- 5.3 AT-RISK INTELLIGENCE ---
+
+Can determine:
+  - Declining usage trends (per product).
+  - Unresolved P1/P2 tickets.
+  - Low CSAT (absolute and relative to portfolio).
+  - Competitor mentions in notes.
+  - Reduced renewal ARR proposals.
+  - Negative meeting tone.
+  - Contract gaps (expired without renewal).
+
+Composite risk assessment (not a single score, but a checklist):
+  Signal                          Source
+  Declining usage                 usage_monthly trend
+  Open P1/P2 tickets             support_tickets
+  Low CSAT (<3.5)                support_tickets
+  Competitor mention             meeting_notes
+  ARR reduction at renewal       crm_opportunities
+  Negative meeting tone          meeting_notes
+  Contract gap                   contracts
+  Notice deadline passed (N)     contracts
+
+--- 5.4 MEETING PREPARATION ---
+
+Can produce:
+  - Account snapshot (profile, segment, tier, owner, tenure).
+  - Current contract position (products, ARR, end date).
+  - Usage performance summary per product.
+  - Support history summary.
+  - Open CRM opportunities.
+  - Previous meeting topics and actions.
+  - Suggested talking points and questions.
+
+================================================================================
+6. TOOL CATALOGUE ASSESSMENT
+================================================================================
+
+The assignment's suggested 9 tools are all justified:
+
+TOOL                 PURPOSE                                 DETERMINISTIC
+resolve_client       Match free-text name to client_id       Yes (fuzzy match)
+get_client_profile   Basic account info                      Yes
+get_contract_status  Contract position, ARR, deadlines       Yes
+get_usage_trend      Monthly usage series, trends, overage   Yes
+get_whitespace       Products not held + segment fit         Yes
+get_support_summary  Ticket counts, CSAT, open tickets       Yes
+get_opportunities    Open/recent CRM opportunities           Yes
+get_meeting_notes    Note text with IDs and dates             Yes (retrieval)
+check_data_quality   Duplicates, gaps, short history          Yes
+
+All tools should return structured JSON with source row IDs for citation.
+
+No tools are missing for must-haves. Meeting note INTERPRETATION (extracting
+interests, risks, sentiment) is the only part needing an LLM — this happens
+at the writer stage, not as a separate tool.
+
+PROPOSED ADDITIONS (optional, only if time):
+  - get_overage_detail: Monthly overage calculation per product.
+    Can be folded into get_usage_trend instead.
+
+TRIGGER-TOOL CONFIGURATION (revised):
+
+                  renewal    meeting_prep   upsell      at_risk
+resolve_client    REQUIRED   REQUIRED       REQUIRED    REQUIRED
+client_profile    REQUIRED   REQUIRED       REQUIRED    REQUIRED
+contract_status   REQUIRED   REQUIRED       SECONDARY   REQUIRED
+usage_trend       REQUIRED   REQUIRED       SECONDARY   REQUIRED
+whitespace        SECONDARY  SECONDARY      REQUIRED    EXCLUDED
+support_summary   REQUIRED   REQUIRED       SECONDARY   REQUIRED
+opportunities     REQUIRED   REQUIRED       REQUIRED    REQUIRED
+meeting_notes     REQUIRED   REQUIRED       REQUIRED    REQUIRED
+data_quality      REQUIRED   REQUIRED       REQUIRED    REQUIRED
+
+Priority definitions:
+  REQUIRED  = Always run. Findings are prominent in the briefing.
+  SECONDARY = Always run. Findings included only if notable (e.g. support
+              issues for upsell: mention if P1/P2 open, otherwise omit).
+  EXCLUDED  = Do not run. Tool output not relevant to this trigger.
+
+Change from previous version: support_summary changed from EXCLUDED to
+SECONDARY for upsell. Rationale: a client with unresolved P1/P2 tickets
+is not ready for an upsell conversation — the rep needs to know.
+Whitespace remains EXCLUDED for at_risk — the focus is retention, not growth.
+
+This configuration is a Python dict in config.py. Each trigger maps to a
+list of tools with priority level. The planner reads it, runs the tools,
+and the writer emphasises findings according to priority.
+
+================================================================================
+7. ARCHITECTURE COMPARISON
+================================================================================
+
+--- Approach A: Fully Deterministic (No LLM) ---
+
+Feasibility: Can handle all calculations, joins, trends, citations.
+Limitations:
+  - Cannot interpret free-text meeting notes beyond keyword search.
+  - Briefing would be template-based: fill-in-the-blanks, robotic.
+  - Cannot generate contextual recommendations or nuanced prose.
+Verdict: Satisfies most must-haves but produces inferior briefing quality.
+         Would not "help a rep" as effectively as natural-language output.
+
+--- Approach B: Hybrid (Deterministic Tools + LLM Writer) ---
+
+Architecture:
+  1. Config-driven planner selects tools per trigger.
+  2. Deterministic Python tools query SQLite, compute metrics.
+  3. Tools return structured JSON with source PKs.
+  4. LLM receives tool outputs + meeting note text.
+  5. LLM generates briefing with citations.
+  6. Deterministic verifier checks citations and numbers.
+Strengths:
+  - Numbers are always correct (deterministic).
+  - Meeting notes can be interpreted in context.
+  - Briefing reads naturally and adapts to trigger.
+  - Simple to build, test, debug.
+LLM hallucination risk (corrected):
+  Even when receiving only tool outputs, an LLM CAN still:
+  - Misinterpret meeting notes (e.g. infer sentiment not present).
+  - Draw unsupported causal connections between data points.
+  - Restate numbers incorrectly (e.g. rounding, wrong units, wrong context).
+  - Infer unstated facts from patterns in the data.
+  Mitigation: The verifier catches numerical errors and missing citations.
+  It CANNOT catch misinterpretations of qualitative text. This is a known
+  limitation. The system prompt must instruct the LLM to quote meeting notes
+  rather than paraphrase, and to flag interpretations as "observation" vs "fact."
+LLM is optional:
+  The analytical pipeline produces structured JSON evidence independently.
+  Without an LLM, a template-based writer can produce a usable briefing:
+  - Jinja2 or f-string templates per trigger.
+  - Sections populated directly from tool JSON.
+  - Meeting notes included as raw quoted text.
+  - Recommendations replaced with factual data points.
+  This produces a correct but less readable briefing. The LLM improves
+  prose quality and note interpretation but is not required for correctness.
+Verdict: RECOMMENDED. Best balance of quality, reliability, and simplicity.
+
+--- Approach C: Multi-Agent Architecture ---
+
+Architecture:
+  LLM planner -> multiple specialist agents -> LLM synthesiser -> verifier.
+Strengths:
+  - Most flexible, could handle novel triggers.
+  - LLM planner could adapt tool selection dynamically.
+Weaknesses:
+  - Massively more complex to build in 4-5 hours.
+  - LLM planner adds latency, cost, and unpredictability.
+  - Config-driven planning is sufficient for 4 known triggers.
+  - Harder to test and debug.
+  - No clear capability gain over Approach B for this assignment.
+Verdict: Over-engineered. Would choose only for a production system with
+         dynamic triggers and many more data sources.
+
+COMPARISON TABLE:
+
+Criterion           A: No LLM        B: Hybrid         C: Multi-Agent
+Accuracy            High              High              Medium (LLM risk)
+Reproducibility     Perfect           High              Medium
+Meeting notes       Keyword only      Full interpret.   Full interpret.
+Briefing quality    Template/rigid    Natural/adapted   Natural/adapted
+Dev time            ~3 hours          ~4-5 hours        ~8+ hours
+Testing             Easy              Moderate          Hard
+Complexity          Low               Medium            High
+Cost per run        $0                ~$0.02-0.05       ~$0.10-0.30
+Suitability         Adequate          Best fit          Over-engineered
+
+RECOMMENDATION: Approach B (Hybrid).
+The config-driven planner makes LLM planning unnecessary.
+The LLM adds value only for meeting-note interpretation and prose generation.
+
+================================================================================
+8. EVIDENCE AND VERIFICATION DESIGN
+================================================================================
+
+--- Evidence Format ---
+
+Each tool returns a JSON object:
+
+{
+  "tool": "get_contract_status",
+  "client_id": "C001",
+  "timestamp": "2026-11-01T00:00:00",
+  "results": {
+    "active_contract": {
+      "contract_id": "K-0002",
+      "start_date": "2025-02-01",
+      "end_date": "2027-01-31",
+      "arr_eur": 752000,
+      "auto_renew": "Y",
+      "notice_period_days": 60,
+      "notice_deadline": "2026-12-02",
+      "days_to_notice": 31,
+      "days_to_end": 91,
+      "source_rows": ["contracts:K-0002"]
+    },
+    "previous_contract": {
+      "contract_id": "K-0001",
+      "arr_eur": 692000,
+      "source_rows": ["contracts:K-0001"]
+    },
+    "arr_change": {
+      "value": 60000,
+      "pct": 8.67,
+      "formula": "(752000 - 692000) / 692000 * 100",
+      "source_rows": ["contracts:K-0001", "contracts:K-0002"]
+    }
+  }
+}
+
+--- Citation in Briefing ---
+
+Markdown briefing uses inline citations:
+
+"The current contract (K-0002) has an ARR of EUR 752,000 [contracts:K-0002],
+up 8.67% from the previous contract [calc:contract_status.arr_change].
+The notice deadline is 2 December 2026 (31 days) [calc:contract_status.notice_deadline]."
+
+--- Verification Rules ---
+
+The verifier is a deterministic Python function that:
+
+1. CITATION CHECK: Every sentence with a number or factual claim must have
+   at least one citation in [brackets]. Flag sentences without citations.
+
+2. EVIDENCE EXISTS: Every cited ID must exist in the evidence JSON.
+   [contracts:K-0002] -> evidence must contain tool output referencing K-0002.
+
+3. NUMBER MATCH: Every number in the briefing must appear in the cited
+   evidence. Match with tolerance for rounding and formatting:
+   - "752,000" matches 752000.
+   - "8.67%" matches 8.67.
+   - Dates match if ISO equivalent.
+
+4. DERIVED METRIC VERIFICATION: For calculated values (percentages, averages,
+   changes), verify the formula:
+   - ARR change: (new - old) / old * 100.
+   - Usage trend: compare period averages using actual monthly values.
+   - CSAT average: sum(scores) / count(scores).
+   The verifier re-runs the calculation from source values in evidence.
+
+5. UNSUPPORTED CLAIMS: Any claim not traceable to evidence is flagged.
+
+FAILURE POLICY:
+  - Missing citation -> Flag in a "verification warnings" section.
+  - Number mismatch -> Attempt repair (re-extract from evidence).
+    If cannot repair, remove the sentence and note removal.
+  - Unsupported claim -> Downgrade to "unverified" with a note.
+  - Never silently pass a failed check.
+
+Limitation: Verifying natural-language claims ("the client is unhappy")
+against meeting notes is subjective. The verifier checks that the note ID
+exists and was for this client, but cannot assess interpretation accuracy.
+
+================================================================================
+9. CONFIDENCE AND UNCERTAINTY
+================================================================================
+
+Confidence is assessed per analytical dimension, not globally.
+
+DIMENSION         HIGH                     MEDIUM                    LOW
+Contract info     Active signed contract   Pending signature         Expired, no successor
+Usage trends      12+ months, no gaps      6-11 months or gaps       <6 months
+Support           10+ tickets with CSAT    5-9 tickets               <5 tickets or no CSAT
+CRM               Active open opportunity  Recently closed opp       No CRM data
+Meeting notes     Note within 3 months     Note within 12 months     No notes or >12 months old
+
+SPECIAL CASES:
+  - C004: 2 months usage, new client -> LOW for all usage analysis.
+  - C007: No active contract -> HIGH urgency flag on contract gap.
+  - C005: 2026-03 missing -> MEDIUM for affected products that month.
+    Note gap, exclude from trend calculation.
+  - C003 streaming conflict: HIGH confidence in data, MEDIUM confidence
+    in note (subjective), report both and flag disagreement.
+
+Briefing includes a "Data gaps and confidence" section that lists:
+  - Which data sources were available.
+  - Which had limitations.
+  - Which findings should be treated cautiously.
+  - Any conflicts between sources.
+
+================================================================================
+10. SYSTEM ARCHITECTURE
+================================================================================
+
+THREE INPUTS:
+  1. client      — "Halden Bet" or "C001" (name or ID, rep types it)
+  2. trigger     — renewal / meeting_prep / upsell / at_risk
+  3. rep_context — optional free text ("Usage feels down, how worried?")
+
+FLOW:
+
+INPUT: client + trigger + rep_context
+  |
+  v
+[1. RESOLVE CLIENT] ---- Fuzzy match on client_name OR exact on client_id
+  |                      "Halden Bet" -> C001, "C009" -> C009
+  |                      If ambiguous -> return candidates, stop
+  |                      Returns: client_id, client_name, confidence
+  v
+[2. LLM PLANNER] ------- Receives: trigger, rep_context, available tools list,
+  |                      trigger-tool config (which tools are relevant)
+  |                      LLM reasons about which tools to call and why
+  |                      Returns: ordered list of tools + reasoning
+  |                      (Config provides guardrails — LLM can't skip
+  |                      REQUIRED tools, can add SECONDARY ones based
+  |                      on rep_context)
+  v
+[3. TOOL EXECUTOR] ----- Python calls each tool from the plan
+  |   |                  Each tool: SQL query -> Python calc -> JSON output
+  |   |                  All tools are DETERMINISTIC — no LLM inside
+  |   |                  Results accumulated in evidence dict
+  |   |
+  |   +-- get_client_profile     (always first)
+  |   +-- get_contract_status
+  |   +-- get_usage_trend        (runs per product)
+  |   +-- get_whitespace
+  |   +-- get_support_summary
+  |   +-- get_opportunities
+  |   +-- get_meeting_notes
+  |   +-- check_data_quality     (always last)
+  |
+  v
+[4. EVIDENCE ASSEMBLY] - Collect all tool outputs into evidence.json
+  |                      Assign stable evidence IDs
+  |                      Link source row PKs (contracts:K-0002, etc.)
+  v
+[5. LLM CLAIM GENERATOR] Receives:
+  |                      - All structured tool outputs (JSON)
+  |                      - Trigger type + rep context
+  |                      - System prompt: output structured claims (JSON),
+  |                        each with type, value, citations, formula
+  |                      LLM outputs an array of structured claims
+  |                      Returns: claims[] (JSON, NOT markdown yet)
+  v
+[6. VERIFIER] ---------- Deterministic Python (NO LLM):
+  |                      - Checks each claim against evidence:
+  |                        direct_fact: lookup source row, match value
+  |                        derived_metric: re-run formula from inputs
+  |                        qualitative: confirm cited note exists for client
+  |                        recommendation: confirm citations exist, label it
+  |                      - Matching rules: normalize money/dates/pct/units
+  |                      - Failure policy: flag or remove, never pass silently
+  |                      Returns: verified_claims[] + verification_report
+  v
+[7. RENDERER] ---------- Deterministic Python (NO LLM):
+  |                      - Converts verified claims into Markdown briefing
+  |                      - Sections ordered by trigger priority
+  |                      - Citations inline from claim metadata
+  |                      - Data gaps section from check_data_quality output
+  |                      Returns: briefing.md
+  v
+OUTPUT:
+  briefing.md              — The rep reads this
+  evidence.json            — Tool outputs + structured claims + source PKs
+  verification_report.json — What passed, what failed, what was flagged
+
+WHO DOES WHAT:
+  LLM: Plans (which tools), writes (briefing prose), interprets (notes)
+  Python: Resolves client, executes tools, calculates, verifies, saves
+  Rule: LLM never touches the database. LLM never calculates numbers.
+        Python never writes prose. Python never interprets meeting notes.
+
+No LangGraph. No vector DB. Plain Python orchestration with LLM calls.
+
+================================================================================
+11. PROJECT STRUCTURE
+================================================================================
+
+client_intel_agent/
+├── main.py                  # CLI entry: --client X --trigger Y --context "Z"
+├── config.py                # Trigger-tool configs, DB path, LLM settings
+├── client_resolver.py       # Fuzzy name match + exact ID lookup
+├── planner.py               # LLM planner: picks tools based on trigger+context
+├── tools/
+│   ├── __init__.py
+│   ├── client_profile.py    # get_client_profile
+│   ├── contract_status.py   # get_contract_status
+│   ├── usage_trend.py       # get_usage_trend
+│   ├── whitespace.py        # get_whitespace
+│   ├── support_summary.py   # get_support_summary
+│   ├── opportunities.py     # get_opportunities
+│   ├── meeting_notes.py     # get_meeting_notes
+│   └── data_quality.py      # check_data_quality
+├── evidence.py              # Evidence assembly + serialisation
+├── writer.py                # LLM briefing generation
+├── verifier.py              # Citation + number verification
+├── db.py                    # SQLite connection helper
+├── evaluation/
+│   ├── run_eval.py          # Run 6+ scenarios, collect results
+│   └── fact_checker.py      # Automated number-in-evidence check
+├── tests/
+│   ├── test_contract_status.py
+│   ├── test_usage_trend.py
+│   └── test_verifier.py
+├── outputs/                 # Generated briefings and evidence files
+├── CLAUDE.md                # Instructions for AI coding tools
+└── README.md                # Design notes, how to run, evaluation results
+
+DEPENDENCIES:
+  - Python 3.9+
+  - sqlite3 (stdlib)
+  - anthropic (Claude API) — only dependency beyond stdlib for LLM
+  - difflib (stdlib) — for fuzzy client name matching
+  - json, datetime, argparse, pathlib (all stdlib)
+  - Optional: pandas (for usage trend calculations — could use pure SQL)
+
+No pandas if avoidable. Pure SQL + stdlib Python is simpler and sufficient.
+
+================================================================================
+12. EVALUATION STRATEGY
+================================================================================
+
+REQUIRED: 3 clients x 2 triggers = 6 scenarios minimum.
+
+RECOMMENDED TEST MATRIX:
+
+#  Client  Trigger       Why Selected
+1  C001    at_risk       Strongest risk signals: declining usage, open P1/P2
+                         tickets, CSAT 2.2, competitor trial, ARR reduction.
+                         Tests: risk signal aggregation, meeting note interpretation.
+
+2  C001    renewal       Same client, different trigger. Notice deadline 31 days.
+                         Tests: ARR change calculation (-28%), notice urgency,
+                         CRM opp O-0001 integration.
+
+3  C002    upsell        Clear WIDGETS opportunity from meeting notes (N-005).
+                         Previous FAN_INSIGHTS lost (O-0002). Tests: whitespace
+                         analysis, lost-opp awareness, note interpretation.
+
+4  C003    meeting_prep  Streaming data/note conflict. Renewal pending board
+                         approval. Notice deadline passed. Tests: conflict
+                         surfacing, data quality handling.
+
+5  C007    renewal       No active contract, pending_signature. Tests: contract
+                         gap handling, edge case.
+
+6  C004    upsell        New client, 2 months data, 1 product only.
+                         Tests: short history handling, data gap disclosure.
+
+BONUS SCENARIOS:
+7  C009    upsell        Fast-growing client, 5 products, streaming interest.
+8  C011    renewal       Renewal with expansion (women's competition).
+9  C024    at_risk       3 P1 tickets, strategic client, open P4 ticket.
+
+AUTOMATED CHECKS PER SCENARIO:
+  1. Every number in briefing appears in evidence.json.
+  2. Every citation ID in briefing references a real evidence entry.
+  3. No citation-free factual sentences.
+  4. Derived calculations (ARR change %, usage trend %) are reproducible.
+  5. Data gaps section exists and mentions known issues.
+  6. Contract dates match source records.
+  7. No products from other clients leaked into briefing.
+
+REQUIRED UNIT TESTS FOR DATA-QUALITY EDGE CASES:
+  T1. Duplicate contract K-0010: tools return 1 contract for C006, not 2.
+  T2. Duplicate usage U-00422/U-01991: usage_trend returns 1 value for
+      C006/LIVE_DATA/2026-08, not doubled.
+  T3. C005 missing 2026-03: usage_trend excludes March, notes the gap,
+      does not treat it as zero.
+  T4. C007 pending contract: contract_status reports no active contract,
+      shows K-0045 as pending, flags the gap.
+  T5. C003 streaming conflict: when meeting notes say "up massively" and
+      usage shows -22.5%, both are reported with the disagreement surfaced.
+  T6. C004 short history: usage_trend refuses to calculate YoY (only 2
+      months), reports "insufficient history", does not produce misleading
+      trend percentages.
+  T7. Ambiguous client match: resolve_client("Sport") returns multiple
+      candidates and stops — does NOT pick one silently.
+
+================================================================================
+13. RISKS AND LIMITATIONS
+================================================================================
+
+1. SYNTHETIC DATA: Patterns may not reflect real-world distributions.
+2. MISSING NOTES: 60% of clients have no meeting notes — briefings for
+   these clients will lack qualitative context.
+3. LLM HALLUCINATION: Writer could invent facts not in evidence.
+   Mitigation: verifier catches unsupported numbers; system prompt
+   explicitly forbids invention; evidence is the only input.
+4. CSAT SPARSITY: 37% of closed tickets have no CSAT. Averages may not
+   represent true satisfaction.
+5. HISTORICAL CONTRACTS: Only latest expired + current active available.
+   Full history unknown for clients with many renewals.
+6. SINGLE CURRENCY: All EUR. No currency issues but no multi-currency.
+7. STATIC SNAPSHOT: Data frozen at 2026-11-01. No real-time updates.
+8. MEETING NOTE SUBJECTIVITY: Notes are one person's interpretation.
+   "Tone noticeably cooler" is subjective.
+9. NO CLIENT FEEDBACK LOOP: Can't validate whether briefings are useful.
+
+PRODUCTION IMPROVEMENTS (not for this assignment):
+  - Live data connections (not static SQLite).
+  - User authentication and access control.
+  - Briefing feedback mechanism (rep ratings).
+  - Incremental updates (not full recalculation).
+  - Multi-language support.
+  - Audit trail and versioning.
+  - Cost monitoring for LLM usage.
+
+================================================================================
+14. IMPLEMENTATION ROADMAP (4-5 hours)
+================================================================================
+
+STAGE 1: Foundation (45 min)
+  Objective: Project structure, DB access, client resolution, LLM planner.
+  Files: main.py, config.py, db.py, client_resolver.py, planner.py
+  Work: CLI accepts --client, --trigger, --context (3 inputs).
+    resolve_client handles both names and IDs with fuzzy matching.
+    LLM planner receives trigger + context + tool config, returns tool plan.
+  Test: "Halden Bet" -> C001. "C009" -> C009. Planner returns tool list.
+  Exit: CLI resolves client, LLM planner outputs which tools to call.
+
+STAGE 2: Core Tools (90 min)
+  Objective: Implement 7 deterministic tools.
+  Files: tools/*.py
+  Priority order:
+    1. get_client_profile (simplest, 10 min)
+    2. get_contract_status (most complex, 25 min)
+    3. get_usage_trend (20 min)
+    4. get_support_summary (15 min)
+    5. get_opportunities (10 min)
+    6. get_meeting_notes (5 min)
+    7. get_whitespace (15 min)
+    8. check_data_quality (10 min — fold into tools above if short on time)
+  Test: Each tool returns correct JSON for C001. Spot-check 2-3 clients.
+  Exit: All tools produce evidence-ready output.
+
+STAGE 3: Evidence + Writer (60 min)
+  Objective: Assemble evidence, generate briefing via LLM.
+  Files: evidence.py, writer.py
+  Work: Evidence JSON assembly with stable IDs. LLM system prompt with
+    citation rules. Briefing template structure per trigger.
+  Test: Generate C001/at_risk briefing. Manual review for quality.
+  Exit: Briefing.md + evidence.json produced.
+
+STAGE 4: Verifier (30 min)
+  Objective: Deterministic verification of briefing against evidence.
+  Files: verifier.py
+  Work: Parse citations, check number matches, verify derived calcs.
+  Test: Intentionally corrupt a number, verify it's caught.
+  Exit: Verification report produced. Failure policy implemented.
+
+STAGE 5: Evaluation (45 min)
+  Objective: Run 6 scenarios, collect results, document findings.
+  Files: evaluation/run_eval.py, evaluation/fact_checker.py
+  Work: Run matrix, automated fact-checks, manual quality review.
+  Test: All 6 scenarios complete. Document pass/fail and quality notes.
+  Exit: outputs/ directory populated. Findings documented.
+
+STAGE 6: Documentation + Polish (30 min)
+  Objective: README, CLAUDE.md, clean up, final review.
+  Files: README.md, CLAUDE.md
+  Work: Design notes, how to run, evaluation results, known limitations,
+    "how I built it" note.
+  Exit: Submission-ready.
+
+BUFFER: 30 min for unexpected issues, debugging, edge cases.
+
+TOTAL: ~5 hours.
+
+IF SHORT ON TIME, CUT:
+  - check_data_quality as separate tool (fold checks into other tools).
+  - Derived calculation re-verification (keep number-match only).
+  - Skip CLAUDE.md polish.
+  - Use template writer instead of LLM writer (still correct, less polished).
+
+DO NOT CUT:
+  - All 6 evaluation runs (assignment requirement: 3 clients x 2 triggers).
+  - Verifier (core requirement).
+  - Citation system (core requirement).
+  - Data gaps disclosure (core requirement).
+
+================================================================================
+15. INTERVIEW PREPARATION
+================================================================================
+
+QUESTIONS TO EXPECT AND PREPARE FOR:
+
+Q: Why this architecture?
+A: The LLM does what LLMs are good at — reasoning about what to analyse,
+   interpreting meeting notes, writing prose. Python does what Python is
+   good at — SQL queries, math, verification. Neither does the other's job.
+   The trigger config provides guardrails so the LLM planner can't skip
+   required tools, but it can reason about emphasis and ordering based on
+   the rep's context. Simple enough to build in 4-5 hours, flexible enough
+   to handle new triggers and live changes in the interview.
+
+Q: How do you calculate usage trends?
+A: Compare average of last 6 months vs prior 6 months. Also compare
+   same-month-last-year for seasonal products. Report both absolute and
+   percentage change. Flag if <6 months available.
+
+Q: How do you handle the C003 streaming conflict?
+A: Report both: data shows decline, note says increase. Present the actual
+   monthly series. Note the recent uptick (Aug-Oct) which may partially
+   explain the director's perception. Let the rep decide.
+
+Q: Why not calculate a risk score?
+A: A single number hides the reasoning. Better to present individual signals
+   (declining usage, low CSAT, competitor trial) and let the rep weigh them.
+   If forced, would use a weighted checklist, but would explain the weights.
+
+Q: How do you prevent LLM hallucination?
+A: Three layers. (1) LLM receives only structured tool outputs — no raw DB
+   access. (2) System prompt requires citations for every claim and forbids
+   inventing data. (3) Deterministic verifier checks every number and citation.
+   Remaining risk: LLM can still misinterpret meeting notes or draw unsupported
+   causal connections. The verifier catches numerical errors but cannot assess
+   qualitative interpretation accuracy. This is stated as a known limitation.
+   Fallback: template-based writer produces correct (if less readable) output
+   without any LLM involvement.
+
+Q: How do you handle missing data?
+A: Missing row ≠ zero (per data dictionary). Tools detect gaps and report
+   them. Briefing includes "data gaps and confidence" section. Trends
+   exclude missing months from calculations. Short histories are flagged.
+
+Q: Can you add a 5th trigger?
+A: Yes — add an entry to the trigger config dict specifying which tools are
+   required/secondary/excluded. The LLM planner already knows how to read
+   the config and reason about tool selection. No code changes needed.
+   Example: a "contract_gap" trigger that marks contract_status and
+   opportunities as REQUIRED, usage as SECONDARY.
+
+Q: How is the verifier independent of the LLM?
+A: Pure Python. Parses Markdown for citation patterns, extracts numbers,
+   looks them up in evidence JSON. Re-runs formulas for derived metrics.
+   No LLM involved. Deterministic. Can be unit-tested.
+
+================================================================================
+16. DATA CORRELATIONS AND CROSS-TABLE INSIGHTS
+================================================================================
+
+This section shows what the tools can derive by COMBINING tables.
+Each insight requires joining 2+ tables. This is the "human intuition"
+layer — knowing WHICH combinations reveal business-relevant signals.
+
+--- 16.1 OVERAGE EXPOSURE (usage_monthly + contract_lines) ---
+
+Clients frequently exceeding included volumes (top offenders):
+
+Client  Product      Overage months  Avg used  Avg included
+C002    STREAM       12/24 (50%)     821       780          <-- biggest overage risk
+C001    ODDS_LIVE    11/24 (46%)     1708      1920
+C009    WIDGETS      10/24 (42%)     46        48
+C024    ODDS_PRE     8/24 (33%)      1034      1120
+C021    STATS_ARCHIVE 7/24 (29%)     112       120
+C005    WIDGETS      6/23 (26%)      41        44
+C010    ODDS_LIVE    5/24 (21%)      1126      1200
+C003    STREAM       5/24 (21%)      518       600
+
+Business use:
+  RENEWAL: Client with overage = leverage ("you're exceeding volume, let's
+    right-size your plan"). Also risk if they want to pay less.
+  UPSELL: Overage = proof they need a bigger tier.
+  AT_RISK: Overage + billing complaints = churn signal.
+
+--- 16.2 USAGE TRENDS YoY (usage_monthly, 12-month comparison) ---
+
+SIGNIFICANTLY DECLINING (>15% drop YoY):
+  C001 LIVE_DATA:  -36.3%     C001 ODDS_LIVE:  -40.0%
+  C003 STREAM:     -22.5%
+
+SIGNIFICANTLY GROWING (>15% growth YoY):
+  C002 STREAM:     +25.2%     C007 LIVE_DATA:  +16.9%
+  C009 ODDS_LIVE:  +22.5%     C009 ODDS_PRE:   +20.9%
+  C010 ODDS_PRE:   +17.4%     C013 STATS_ARCH: +17.1%
+  C014 STATS_ARCH: +15.6%     C016 LIVE_DATA:  +15.3%
+  C017 STATS_ARCH: +22.2%     C021 WIDGETS:    +25.0%
+  C023 LIVE_DATA:  +13.6%
+
+Business use:
+  DECLINING: at_risk signal, renewal leverage for client.
+  GROWING: upsell signal (may need bigger tier), good renewal position.
+
+--- 16.3 AT-RISK MULTI-SIGNAL CORRELATION ---
+(support_tickets + usage_monthly + meeting_notes + crm_opportunities)
+
+Only C001 triggers ALL risk signals simultaneously:
+  - 11 P1+P2 tickets (highest in portfolio)
+  - 2 open tickets (P1 + P2)
+  - CSAT 2.2 (worst by far; next lowest is C018 at 3.5)
+  - 3 products declining (LIVE_DATA -36%, ODDS_LIVE -40%, STREAM -10%)
+  - Competitor trial mentioned in meeting notes
+  - Renewal opp proposing 28% ARR reduction (541K vs 752K)
+  This is the strongest at-risk case in the dataset.
+
+C003 has one risk signal:
+  - STREAM declining 22.5% YoY
+  - BUT meeting note says "up massively" (conflict to surface)
+  - Renewal opp at +10% (positive sign)
+
+No other client has multiple overlapping risk signals.
+
+--- 16.4 WHITESPACE / UPSELL OPPORTUNITIES ---
+(clients + products + contract_lines + crm_opportunities + meeting_notes)
+
+Strongest upsell opportunities (segment fit + related product + evidence):
+
+Client  Product    Segment fit  Related to held  Evidence
+C002    WIDGETS    Broadcaster  LIVE_DATA,STATS  N-005: asked about "embeddable visualisations"
+C008    WIDGETS    Broadcaster  LIVE_DATA,STATS  N-008: "strong interest", O-0006 in Proposal
+C009    STREAM     Sportsbook   WIDGETS          N-011: "want live streaming", O-0007 in Qual
+C016    STREAM     Sportsbook   WIDGETS          O-0013 in Proposal, pricing agreed
+C005    FAN_INS    Broadcaster  WIDGETS          Holds everything else broadcaster needs
+C024    WIDGETS    Sportsbook   LIVE_DATA        O-0018 in Qualification
+
+Weak/avoid:
+C002    FAN_INS    Broadcaster  -                O-0002 Closed Lost "no budget" (2025)
+C015    ODDS_LIVE  D&TP         -                O-0012 Closed Lost "not a sportsbook use case"
+C017    STREAM     Club         -                O-0014 Closed Lost "rights held by league"
+
+--- 16.5 PEER ADOPTION RATES (clients + contract_lines by segment) ---
+
+This tells us "X% of similar clients hold this product":
+
+Sportsbook (6): LIVE_DATA 100%, ODDS_PRE 100%, ODDS_LIVE 83%, STREAM 50%
+Broadcaster (6): STREAM 83%, STATS 83%, LIVE_DATA 83%, WIDGETS 67%, FAN_INS 33%
+League/Fed (6):  STATS 100%, INTEGRITY 83%, STREAM 67%, FAN_INS 67%
+Fantasy (3):     LIVE_DATA 100%, WIDGETS 67%, STATS 67%
+D&TP (2):        STATS 100%, ODDS_PRE 100%, LIVE_DATA 100%, WIDGETS 50%
+Club (2):        WIDGETS 100%, FAN_INS 100%, STATS 50%
+
+Business use: "5 of 6 sportsbooks hold ODDS_LIVE; you're the one that doesn't"
+  — powerful upsell argument using peer pressure.
+
+--- 16.6 RENEWAL READINESS (contracts + crm_opportunities) ---
+
+Contracts ending within 6 months and whether a renewal opp exists:
+
+COVERED (renewal opp exists):
+  C003 ends 2026-12-31 (auto=N!) | O-0003 Proposal +10%
+  C001 ends 2027-01-31 (auto=Y)  | O-0001 Negotiation -28%
+  C011 ends 2027-01-31 (auto=N!) | O-0010 Proposal +5%
+  C025 ends 2027-03-31 (auto=N!) | O-0019 Proposal +2%
+  C010 ends 2027-06-30 (auto=Y)  | O-0009 Qualification +3%
+
+NOT COVERED (no renewal opp, needs attention):
+  C005 ends 2026-11-30 (auto=Y)  | notice PASSED | auto-renews, but risky
+  C022 ends 2026-12-31 (auto=Y)  | 30 days to notice
+  C006 ends 2027-02-28 (auto=Y)  | 59 days to notice
+  C016 ends 2027-02-28 (auto=Y)  | 59 days to notice
+  C020 ends 2027-02-28 (auto=Y)  | 59 days to notice
+  C002 ends 2027-05-31 (auto=N!) | HIGH RISK — no auto-renew, no opp
+
+CONTRACT GAP:
+  C007 expired 2026-09-30 | K-0045 pending_signature | service at risk
+
+--- 16.7 MEETING NOTES vs STRUCTURED DATA (qualitative vs quantitative) ---
+
+Agreements:
+  C001: Notes say "cooler tone", "competitor trial" -> data confirms
+        declining usage, low CSAT, open P1 ticket. ALIGNED.
+  C002: Notes say "streaming success, audience growing" -> data shows
+        STREAM +25.2% YoY. ALIGNED.
+  C009: Notes say "growth across all markets" -> data shows all products
+        growing. ALIGNED.
+
+Conflict:
+  C003: Note N-006 says streaming "up massively" -> data shows STREAM
+        -22.5% YoY. CONFLICT. Must surface to rep with both sources.
+
+Missing context (no notes for these clients):
+  C016 (Strategic sportsbook, STREAM opp in Proposal — no notes to explain)
+  C024 (Strategic sportsbook, 3 P1 tickets — no notes on relationship health)
+  C019 (Core, WIDGETS upsell in Negotiation — no notes on client interest)
+
+--- 16.8 WHAT EACH TRIGGER SHOULD EXTRACT ---
+
+RENEWAL needs: contract details + ARR change + notice deadline +
+  usage trend (leverage or risk) + overage (right-sizing argument) +
+  support health (can we ask for more?) + CRM renewal opp +
+  competitor signals from notes + peer adoption context.
+
+MEETING_PREP needs: everything above + previous meeting topics and
+  actions (what did we promise?) + open CRM opps (what are we selling?) +
+  upcoming deadlines (what's urgent?).
+
+UPSELL needs: whitespace gaps + peer adoption rates (social proof) +
+  related products (natural next buy) + existing CRM opps (don't duplicate) +
+  lost opps (don't re-pitch too soon) + usage patterns (overage = needs more) +
+  note interests (explicit asks).
+
+AT_RISK needs: declining usage trends + open/unresolved P1/P2 tickets +
+  CSAT below 3.5 + competitor mentions + ARR reduction proposals +
+  contract gap or missed notice deadline + negative meeting tone +
+  stalled CRM opps.
+
+================================================================================
+17. DELIVERABLES CHECKLIST
+================================================================================
+
+SUBMISSION must include (from assignment docx):
+  [ ] Code with instructions to run from clean checkout
+  [ ] Placeholder for API key (not real key)
+  [ ] Sample outputs: briefings + evidence files from evaluation runs
+  [ ] CLAUDE.md / AGENTS.md — instruction files for AI coding tools
+  [ ] Runtime prompts the agent uses (system prompts, planner prompts)
+  [ ] README with:
+      [ ] How to run
+      [ ] Design notes (flow, what each step does, where LLM used and why)
+      [ ] Evaluation results
+      [ ] Known limitations
+      [ ] What you'd do next for production
+      [ ] "How I built it" note on AI coding tool usage (~half page)
+
+================================================================================
+ADDENDUM A: USAGE TREND METHODOLOGY
+================================================================================
+
+Primary measure: Year-over-year (YoY) comparison.
+  For each product, compare same calendar months this year vs last year.
+  Example for C001 LIVE_DATA:
+    Oct 2025: 7433    Oct 2026: 4422   YoY change: -40.5%
+    Sep 2025: 8009    Sep 2026: 4883   YoY change: -39.0%
+  This controls for seasonality.
+
+Secondary measure: Recent 3-month momentum.
+  Average of most recent 3 months vs previous 3 months.
+  Example for C001 LIVE_DATA:
+    Recent 3 (Aug-Oct 2026): avg(4962, 4883, 4422) = 4756
+    Prior 3 (May-Jul 2026): avg(6382, 5112, 4299) = 5264
+    Momentum: -9.7%
+
+Handling incomplete history:
+  - <6 months: Report absolute values only. Flag "insufficient history for
+    trend analysis" in data gaps section. Do not calculate YoY.
+  - 6-11 months: Calculate momentum only. No YoY.
+  - 12+ months: Calculate both YoY and momentum.
+
+Handling missing months:
+  - Skip missing months from averages. Do not impute.
+  - Report the gap: "2026-03 data unavailable, excluded from trend."
+  - If >2 consecutive months missing, flag unreliable trend.
+
+Never interpret missing usage as zero consumption.
+
+================================================================================
+ADDENDUM B: OVERAGE ESTIMATION
+================================================================================
+
+Overage = max(0, units_used - included_units_monthly) for each month.
+Estimated charge = overage_units * overage_rate_eur_per_unit.
+
+CRITICAL: Use the contract line and rate applicable to that specific month.
+  - Match each usage month to the contract in force during that month
+    using: month >= contract.start_date AND month <= contract.end_date.
+  - Then match the product to the contract line for that contract.
+  - Use THAT line's included_units_monthly and overage_rate_eur_per_unit.
+
+If no signed contract covers a usage month (e.g. pending_signature or gap),
+the overage estimate cannot be calculated for that month. Report this.
+
+The usage_monthly table already has an included_units column which records
+the included volume from the contract in force that month. Where available,
+this is the most reliable source. Where blank, no signed contract covered
+the month.
+
+Clearly label all overage figures as ESTIMATED. These are calculated from
+usage vs contract terms, not actual invoiced amounts.
+
+================================================================================
+ADDENDUM C: IMPROVED VERIFICATION DESIGN
+================================================================================
+
+STRUCTURED CLAIMS (canonical writer flow):
+
+The writer does NOT go straight to Markdown. It follows three steps:
+  Step 1: LLM generates structured claims (JSON array).
+  Step 2: Verifier checks each claim against evidence (deterministic).
+  Step 3: Renderer converts verified claims into Markdown briefing.
+
+Claims are stored in evidence.json alongside tool outputs. The verification
+report records what passed, failed, was flagged, or was removed.
+
+This means: Markdown is a rendered VIEW of verified claims, not raw LLM text.
+
+Each claim is a structured object:
+
+{
+  "claim_id": "CL-001",
+  "type": "direct_fact",           // direct_fact | derived_metric | qualitative | recommendation
+  "statement": "Current ARR is EUR 752,000",
+  "value": 752000,
+  "citations": ["contracts:K-0002"],
+  "verification": "lookup"         // lookup | formula | note_reference | unverifiable
+}
+
+{
+  "claim_id": "CL-002",
+  "type": "derived_metric",
+  "statement": "ARR increased 8.67% at last renewal",
+  "value": 8.67,
+  "citations": ["contracts:K-0001", "contracts:K-0002"],
+  "formula": "(752000 - 692000) / 692000 * 100",
+  "inputs": {"old": 692000, "new": 752000},
+  "verification": "formula"
+}
+
+{
+  "claim_id": "CL-003",
+  "type": "qualitative",
+  "statement": "Client tone was noticeably cooler in June meeting",
+  "citations": ["note:N-002"],
+  "verification": "note_reference"
+}
+
+{
+  "claim_id": "CL-004",
+  "type": "recommendation",
+  "statement": "Consider offering a reduced in-play scope to retain the account",
+  "citations": ["note:N-003", "opp:O-0001"],
+  "verification": "unverifiable"   // recommendations cannot be fact-checked
+}
+
+VERIFICATION BY CLAIM TYPE:
+  direct_fact:     Look up cited source row, verify value matches.
+  derived_metric:  Re-run formula from inputs, verify result matches value.
+  qualitative:     Verify cited note exists and belongs to this client.
+                   CANNOT verify interpretation accuracy. State this.
+  recommendation:  Verify citations exist. Cannot verify correctness.
+                   Flag as "recommendation, not factual claim."
+
+VERIFIER MATCHING RULES BY DATA TYPE:
+  Monetary: "EUR 752,000" matches 752000. Ignore currency prefix, commas.
+  Percentage: "8.67%" matches 8.67. Allow ±0.1 for rounding.
+  Dates: "2 December 2026" matches "2026-12-02". Parse both to date objects.
+  Units: "8,000 API calls" matches 8000. Strip unit labels before comparing.
+  Counts: "5 P1 tickets" — verify 5 matches the count in evidence.
+  Derived: Re-run formula from stored inputs. Allow ±0.5% for rounding.
+  Recommendations: NOT verifiable as fact. Must be labeled type=recommendation
+    with supporting citations. Verifier confirms citations exist, does not
+    assess whether the recommendation is correct.
+
+LIMITATION: A deterministic verifier cannot assess whether "tone was cooler"
+is a reasonable interpretation of meeting note N-002. It can only confirm
+that N-002 exists, belongs to C001, and was dated 2026-06-12. Interpretation
+accuracy requires human review or LLM-as-judge (stretch goal).
+
+Recommendations that the LLM invents without supporting citations must be
+flagged and removed. The LLM can only recommend based on evidence it was
+given (e.g. "consider WIDGETS" is valid if whitespace tool shows segment
+fit + related product held; "consider expanding to Asia" has no evidence).
+
+================================================================================
+ADDENDUM D: CONFIDENCE VS URGENCY
+================================================================================
+
+Confidence and urgency are independent dimensions.
+
+CONFIDENCE = How reliable is our evidence?
+  HIGH:   Signed contract, 12+ months usage, CSAT from 10+ tickets.
+  MEDIUM: Pending contract, 6-11 months usage, partial CSAT data.
+  LOW:    No contract, <6 months usage, no CSAT, no meeting notes.
+
+URGENCY = How time-sensitive is the finding?
+  HIGH:   Notice deadline passed or <30 days. Contract gap. Open P1 ticket.
+  MEDIUM: Notice deadline 30-90 days. Active renewal negotiation.
+  LOW:    Contract end >6 months. No immediate deadline.
+
+Example: C007 (Varrow Racing Authority)
+  Confidence in contract info: LOW (no active contract, pending_signature).
+  Urgency: HIGH (contract gap exists NOW, service continuity at risk).
+  -> The briefing should say: "HIGH URGENCY: No active contract in force.
+     K-0045 awaiting signature. Evidence confidence for contract terms: LOW
+     (terms not yet finalised)."
+
+Example: C004 (Quillon Esports)
+  Confidence in usage trends: LOW (only 2 months of data).
+  Urgency: LOW (new 12-month contract, 10 months remaining).
+  -> "Usage trend analysis unavailable: insufficient history (2 months)."
+
+================================================================================
+ADDENDUM E: CORRECTED TIME ESTIMATES
+================================================================================
+
+Stage 1: Foundation               45 min
+Stage 2: Core Tools (8 tools)     90 min
+Stage 3: Evidence + Writer        60 min
+Stage 4: Verifier                 30 min
+Stage 5: Evaluation (6 runs)      45 min
+Stage 6: Documentation            30 min
+                                  ------
+Subtotal:                         300 min = 5 hours
+
+No separate buffer — 5 hours is the full allocation.
+
+IF SHORT ON TIME, CUT (in order):
+  1. check_data_quality as separate tool (fold into other tools): saves 10 min.
+  2. Template-based writer instead of LLM writer: saves 20 min on prompt eng.
+  3. Reduce bonus scenarios (keep all 6 required).
+
+NEVER CUT:
+  - Any of the 6 evaluation runs (assignment requirement: 3 clients x 2 triggers).
+  - Verifier (core requirement).
+  - Citation system (core requirement).
+  - Data gaps section (core requirement).
+
+================================================================================
+ADDENDUM F: USAGE DUPLICATE CLARIFICATION
+================================================================================
+
+Usage records U-00422 and U-01991:
+  Both have different primary keys (usage_id), so no PK-level duplicate.
+  Both have identical business keys (C006, LIVE_DATA, 2026-08) and
+  identical values (units_used=2176, included_units=4000, source=metering).
+  This is a business-level duplicate: two records for the same observation.
+  Handling: Deduplicate by (client_id, product_id, month), keeping the
+  lower usage_id. Report the duplicate in data_quality output.
+
+================================================================================
+END OF PLAN
+================================================================================

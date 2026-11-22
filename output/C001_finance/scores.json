@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "The briefing thoroughly covers all finance-trigger dimensions: contract status, renewal timeline, ARR vs. pipeline gap, usage trends per product, peer comparison, support health, risks, and actionable next steps. No major finance-relevant area is omitted."
+  },
+  "accuracy": {
+    "score": 4,
+    "comment": "Claims are well-sourced to specific record IDs and tool outputs. The evidence summary confirms the tools called align with the assertions made. However, numerous claims are tagged [UNVERIFIED: no source found] even though the evidence summary shows the relevant tools were called and returned data \u2014 this over-tagging slightly undermines confidence in whether the analyst verified their own outputs, though the underlying data appears consistent and cross-referenced (e.g., usage declines corroborate the client's ask for reduced in-play scope)."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Next steps are specific, time-bound (align close before 2026-12-02 notice deadline), and tied to concrete data points (right-size ODDS_LIVE/LIVE_DATA citing exact YoY declines, bundle ODDS_PRE upsell citing +24.2% growth, restructure STREAM at 50.4% utilization). Each recommendation is directly executable by the rep."
+  },
+  "data_transparency": {
+    "score": 4,
+    "comment": "The briefing proactively flags missing CSAT scores, absence of meeting notes/relationship context, and LLM-computed values. However, the extensive use of [UNVERIFIED: no source found] on claims that appear to come directly from tool outputs (e.g., contract details from get_contract_status, opportunity details from get_opportunities) is confusing \u2014 it's unclear whether these are genuinely unverified or if the tagging is overly conservative. The distinction between truly unverifiable claims and tool-sourced data could be sharper."
+  },
+  "overall": 4,
+  "summary": "An excellent, comprehensive finance briefing with highly actionable recommendations tied to concrete usage and contract data, slightly undermined by inconsistent UNVERIFIED tagging that creates unnecessary ambiguity about data provenance despite the evidence clearly supporting most claims."
+}

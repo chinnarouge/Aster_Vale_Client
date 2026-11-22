@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "The briefing thoroughly covers all aspects required for an upsell trigger: account snapshot, contract/renewal position, usage trends across all 4 products, whitespace/growth opportunities, support health, peer comparison, risks, recommended next steps, and data gaps. Every relevant dimension is addressed."
+  },
+  "accuracy": {
+    "score": 4,
+    "comment": "Claims are well-sourced with specific record IDs and consistent with the evidence summary showing appropriate tool calls. The extensive use of [UNVERIFIED: no source found] tags is concerning but appears to be a systematic labeling issue rather than actual fabrication \u2014 the evidence summary confirms the relevant tools were called. Calculations like utilization averages and percentage changes are internally consistent. Minor concern: the 77.6% average utilization figure vs. the individual product utilizations (78.7%, 71.0%, 64.8%, 71.3%) doesn't average to 77.6% with equal weighting, suggesting either weighted calculation or a potential discrepancy."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Next steps are exceptionally concrete and prioritized: urgent follow-up on board approval with clear deadline rationale, specific bundled upsell proposal tied to usage data, proactive strategy for handling the STREAM decline in negotiations, and pipeline hygiene recommendation. Each action is tied to specific data points and business logic."
+  },
+  "data_transparency": {
+    "score": 5,
+    "comment": "Excellent transparency throughout. The briefing systematically flags all data gaps (missing prev_arr_eur, 9 CSAT-less tickets, no meeting history/relationship notes), marks unverified claims and LLM-computed values, calls out the below-average utilization as a potential weakness, and dedicates an entire section to data gaps and confidence. The STREAM YoY decline is surfaced as both a risk and an action item rather than hidden."
+  },
+  "overall": 5,
+  "summary": "An exemplary upsell briefing that is comprehensive, well-structured, and highly actionable, with strong data transparency and concrete next steps tied to specific evidence \u2014 the pervasive [UNVERIFIED] tags are the only notable drawback but appear to be a systematic labeling artifact rather than a substantive accuracy issue."
+}

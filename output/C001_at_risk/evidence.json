@@ -1,0 +1,2093 @@
+{
+  "as_of": "2026-11-01",
+  "tools_run": [
+    "get_client_profile",
+    "get_contract_status",
+    "get_usage_trend",
+    "get_support_summary",
+    "get_meeting_notes",
+    "get_peer_comparison",
+    "check_data_quality"
+  ],
+  "tools_summary": {
+    "get_client_profile": {
+      "row_ids": [
+        "C001"
+      ],
+      "keys": [
+        "client_id",
+        "client_name",
+        "segment",
+        "country",
+        "account_owner",
+        "customer_since",
+        "tier"
+      ]
+    },
+    "get_contract_status": {
+      "row_ids": [
+        "K-0002",
+        "L-00005",
+        "L-00006",
+        "L-00007",
+        "L-00008"
+      ],
+      "keys": [
+        "active_contracts",
+        "pending_contracts",
+        "total_arr",
+        "has_active_contract"
+      ]
+    },
+    "get_usage_trend": {
+      "row_ids": [
+        "U-00001",
+        "U-00005",
+        "U-00009",
+        "U-00013",
+        "U-00017",
+        "U-00021",
+        "U-00025",
+        "U-00029",
+        "U-00033",
+        "U-00037",
+        "U-00041",
+        "U-00045",
+        "U-00049",
+        "U-00053",
+        "U-00057",
+        "U-00061",
+        "U-00065",
+        "U-00069",
+        "U-00073",
+        "U-00077",
+        "U-00081",
+        "U-00085",
+        "U-00089",
+        "U-00093",
+        "U-00002",
+        "U-00006",
+        "U-00010",
+        "U-00014",
+        "U-00018",
+        "U-00022",
+        "U-00026",
+        "U-00030",
+        "U-00034",
+        "U-00038",
+        "U-00042",
+        "U-00046",
+        "U-00050",
+        "U-00054",
+        "U-00058",
+        "U-00062",
+        "U-00066",
+        "U-00070",
+        "U-00074",
+        "U-00078",
+        "U-00082",
+        "U-00086",
+        "U-00090",
+        "U-00094",
+        "U-00003",
+        "U-00007",
+        "U-00011",
+        "U-00015",
+        "U-00019",
+        "U-00023",
+        "U-00027",
+        "U-00031",
+        "U-00035",
+        "U-00039",
+        "U-00043",
+        "U-00047",
+        "U-00051",
+        "U-00055",
+        "U-00059",
+        "U-00063",
+        "U-00067",
+        "U-00071",
+        "U-00075",
+        "U-00079",
+        "U-00083",
+        "U-00087",
+        "U-00091",
+        "U-00095",
+        "U-00004",
+        "U-00008",
+        "U-00012",
+        "U-00016",
+        "U-00020",
+        "U-00024",
+        "U-00028",
+        "U-00032",
+        "U-00036",
+        "U-00040",
+        "U-00044",
+        "U-00048",
+        "U-00052",
+        "U-00056",
+        "U-00060",
+        "U-00064",
+        "U-00068",
+        "U-00072",
+        "U-00076",
+        "U-00080",
+        "U-00084",
+        "U-00088",
+        "U-00092",
+        "U-00096"
+      ],
+      "keys": [
+        "products"
+      ]
+    },
+    "get_support_summary": {
+      "row_ids": [
+        "T-0151",
+        "T-0169",
+        "T-0203",
+        "T-0237",
+        "T-0242",
+        "T-0249",
+        "T-0255",
+        "T-0259",
+        "T-0269",
+        "T-0273",
+        "T-0279",
+        "T-0284"
+      ],
+      "keys": [
+        "window",
+        "total_tickets",
+        "by_priority",
+        "by_category",
+        "prev_window_total",
+        "prev_by_priority",
+        "ticket_change_abs",
+        "change_pct",
+        "open_tickets",
+        "avg_csat",
+        "csat_response_rate",
+        "csat_responses",
+        "prev_avg_csat",
+        "csat_change",
+        "notable_tickets"
+      ]
+    },
+    "get_meeting_notes": {
+      "row_ids": [
+        "N-003",
+        "N-002",
+        "N-001"
+      ],
+      "keys": [
+        "notes",
+        "count"
+      ]
+    },
+    "get_peer_comparison": {
+      "row_ids": [
+        "C001",
+        "C009",
+        "C010",
+        "C012",
+        "C016",
+        "C024"
+      ],
+      "keys": [
+        "segment",
+        "this_client",
+        "peer_count",
+        "segment_avg_arr",
+        "segment_min_arr",
+        "segment_max_arr",
+        "segment_avg_products",
+        "segment_avg_utilization",
+        "arr_rank",
+        "arr_rank_of",
+        "peers"
+      ]
+    },
+    "check_data_quality": {
+      "row_ids": [],
+      "keys": [
+        "issues",
+        "issue_count"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "section": "headline",
+      "claim": "Halden Bet (Strategic, \u00a3752K ARR, #1 in Sportsbook segment) is at risk: in-play products show steep usage declines, support tickets have surged 500% YoY with a CSAT of 2.22, the client is trialling a competitor for in-play odds, and the notice deadline is only 31 days away on 2026-12-02.",
+      "numeric_values": [
+        752000,
+        500.0,
+        2.22,
+        31
+      ],
+      "citations": [
+        "K-0002",
+        "T-0151",
+        "N-003",
+        "C001"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "752.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "account_snapshot",
+      "claim": "Halden Bet is a Strategic-tier Sportsbook client based in GB, a customer since 2021-02-01, managed by Maya Lindgren. They are the highest ARR account in the Sportsbook segment, ranking 1 of 6 peers with total ARR of 752,000 EUR versus a segment average of 499,500 EUR.",
+      "numeric_values": [
+        752000,
+        499500,
+        1,
+        6
+      ],
+      "citations": [
+        "C001"
+      ],
+      "source_tool": "get_client_profile",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2021.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "contract_position",
+      "claim": "Active renewal contract K-0002 runs from 2025-02-01 to 2027-01-31 (91 days remaining) with auto-renew enabled. The notice deadline is 2026-12-02 \u2014 only 31 days away. ARR is 752,000 EUR, up 8.7% from prior ARR of 692,000 EUR. Products: LIVE_DATA (192,000), ODDS_PRE (144,000), ODDS_LIVE (240,000), STREAM (176,000).",
+      "numeric_values": [
+        91,
+        31,
+        752000,
+        8.7,
+        692000,
+        192000,
+        144000,
+        240000,
+        176000
+      ],
+      "citations": [
+        "K-0002",
+        "L-00005",
+        "L-00006",
+        "L-00007",
+        "L-00008"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2025.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2027.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "contract_position",
+      "claim": "Procurement explicitly asked for pricing for a reduced in-play scope at renewal, citing budget pressure from finance. The head of trading confirmed they have been trialling another in-play odds supplier for two leagues since the summer.",
+      "numeric_values": [],
+      "citations": [
+        "N-003"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "passed"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "In-play Odds Feed (ODDS_LIVE) usage is declining sharply: YoY change of -31.0%, recent-vs-prior quarter change of -8.8%, and average utilization at only 60.6%. October 2026 usage fell to 991K markets priced, down from 1,170K in both August and September.",
+      "numeric_values": [
+        -31.0,
+        -8.8,
+        60.6,
+        991,
+        1170,
+        1170
+      ],
+      "citations": [
+        "U-00094",
+        "U-00090",
+        "U-00086"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Live Match Data Feed (LIVE_DATA) usage is also declining: YoY change of -26.5%, recent-vs-prior quarter change of -9.7%, average utilization of 62.6%. October 2026 usage dropped to 4,422K API calls from 4,962K in August and 4,883K in September.",
+      "numeric_values": [
+        -26.5,
+        -9.7,
+        62.6,
+        4422,
+        4962,
+        4883
+      ],
+      "citations": [
+        "U-00093",
+        "U-00085",
+        "U-00089"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Pre-match Odds Feed (ODDS_PRE) is a bright spot: recent-vs-prior quarter change of +24.2% and average utilization of 77.0%. October usage was 1,149K markets priced, up from 988K in August. YoY change is only -1.4%.",
+      "numeric_values": [
+        24.2,
+        77.0,
+        1149,
+        988,
+        -1.4
+      ],
+      "citations": [
+        "U-00095",
+        "U-00087",
+        "U-00091"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Live Streaming (STREAM) has recent-vs-prior quarter growth of +23.2% but YoY is still down -10.6% with average utilization of only 50.4%. October usage was 541 streamed hours.",
+      "numeric_values": [
+        23.2,
+        -10.6,
+        50.4,
+        541
+      ],
+      "citations": [
+        "U-00096",
+        "U-00088",
+        "U-00092"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "usage_trends",
+      "claim": "Halden Bet's overall average utilization is 64.5%, significantly below the Sportsbook segment average of 86.1%, indicating substantial under-use of contracted capacity across products.",
+      "numeric_values": [
+        64.5,
+        86.1
+      ],
+      "citations": [
+        "C001"
+      ],
+      "source_tool": "get_peer_comparison",
+      "verification": "passed"
+    },
+    {
+      "section": "support_health",
+      "claim": "Support tickets surged from 2 in the prior 12-month window to 12 in the current window \u2014 a 500% increase. Prior tickets were all P3; current tickets include 5 P1s and 6 P2s, showing a dramatic escalation in severity.",
+      "numeric_values": [
+        2,
+        12,
+        500.0,
+        5,
+        6
+      ],
+      "citations": [
+        "T-0151",
+        "T-0169",
+        "T-0203",
+        "T-0237",
+        "T-0242",
+        "T-0249",
+        "T-0255",
+        "T-0259",
+        "T-0269",
+        "T-0273",
+        "T-0279",
+        "T-0284"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "passed"
+    },
+    {
+      "section": "support_health",
+      "claim": "Average CSAT across 9 responses is 2.22 out of 5 with a 90.0% response rate. Three P1 tickets related to ODDS_LIVE latency/outage received CSAT scores of 1, and a P1 outage ticket (T-0255) describes a 35-minute in-play feed outage.",
+      "numeric_values": [
+        2.22,
+        9,
+        90.0,
+        1,
+        35
+      ],
+      "citations": [
+        "T-0249",
+        "T-0255",
+        "T-0269"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-255.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "llm_computed",
+          "detail": "35 not in tool output \u2014 appears to be 4 - -31.0 = 35"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "support_health",
+      "claim": "Latency is the dominant issue category with 5 tickets, all targeting the ODDS_LIVE product. There are also 2 data accuracy tickets for LIVE_DATA. Two tickets remain open: T-0279 (P2, missing corner/card events in live feed) and T-0284 (P1, in-play latency spike during evening fixtures).",
+      "numeric_values": [
+        5,
+        2,
+        2
+      ],
+      "citations": [
+        "T-0237",
+        "T-0249",
+        "T-0269",
+        "T-0273",
+        "T-0284",
+        "T-0279",
+        "T-0242"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-279.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-284.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "relationship_context",
+      "claim": "In the Oct 2026 renewal pre-discussion, the head of trading confirmed trialling another in-play odds supplier 'for two leagues' since the summer. Procurement is requesting pricing for a reduced in-play scope. However, they remain positive about the live data feed and pre-match odds.",
+      "numeric_values": [],
+      "citations": [
+        "N-003"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "relationship_context",
+      "claim": "In the Jun 2026 service call, Halden complained about in-play price delays during busy fixtures, stated traders had to suspend markets manually, requested a written explanation and service credits. Maya noted the client's tone was 'noticeably cooler than last quarter.'",
+      "numeric_values": [],
+      "citations": [
+        "N-002"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "relationship_context",
+      "claim": "In the Nov 2025 quarterly review, the trading team was happy with in-play coverage and pre-match pricing, though they raised the prior renewal price increase again. They expressed interest in more streaming for lower leagues.",
+      "numeric_values": [],
+      "citations": [
+        "N-001"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2025.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "relationship_context",
+      "claim": "A billing ticket (T-0259, P3) queried the price increase applied at last renewal, consistent with the Nov 2025 meeting note where the client raised the same concern. CSAT on that ticket was 2.",
+      "numeric_values": [
+        2
+      ],
+      "citations": [
+        "T-0259",
+        "N-001"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2025.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-259.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "risks",
+      "claim": "CRITICAL RISK \u2014 Notice deadline in 31 days (2026-12-02): Halden is actively trialling a competitor for in-play odds, requesting reduced in-play scope pricing, and ODDS_LIVE usage is down 31.0% YoY. ODDS_LIVE is the largest product line at 240,000 EUR. Partial or full loss of this product is a material ARR threat.",
+      "numeric_values": [
+        31,
+        -31.0,
+        240000
+      ],
+      "citations": [
+        "K-0002",
+        "N-003",
+        "U-00094"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "risks",
+      "claim": "Persistent ODDS_LIVE service quality issues (5 latency tickets, 1 outage, CSAT scores of 1 on P1 incidents) are the apparent driver of competitive evaluation. Two related tickets (T-0279, T-0284) remain open and unresolved.",
+      "numeric_values": [
+        5,
+        1,
+        1
+      ],
+      "citations": [
+        "T-0249",
+        "T-0255",
+        "T-0269",
+        "T-0284",
+        "T-0279"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-279.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-284.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "risks",
+      "claim": "Overall utilization is only 64.5% vs segment average of 86.1%, giving the client leverage to argue they are over-paying relative to usage, especially given the 8.7% ARR increase at the last renewal.",
+      "numeric_values": [
+        64.5,
+        86.1,
+        8.7
+      ],
+      "citations": [
+        "C001",
+        "K-0002"
+      ],
+      "source_tool": "get_peer_comparison",
+      "verification": "passed"
+    },
+    {
+      "section": "growth_opportunities",
+      "claim": "Pre-match Odds Feed usage is growing strongly (recent-vs-prior +24.2%) with 77.0% utilization \u2014 the healthiest product. The client remains positive about this product per the Oct meeting. This could be positioned as an anchor in renewal negotiations.",
+      "numeric_values": [
+        24.2,
+        77.0
+      ],
+      "citations": [
+        "U-00095",
+        "N-003"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "passed"
+    },
+    {
+      "section": "growth_opportunities",
+      "claim": "Live Streaming utilization is only 50.4% with recent quarter-over-quarter growth of +23.2%. The Nov 2025 QBR noted client interest in streaming for lower leagues. Expanding streaming content could add value and offset potential in-play scope reductions.",
+      "numeric_values": [
+        50.4,
+        23.2
+      ],
+      "citations": [
+        "U-00096",
+        "N-001"
+      ],
+      "source_tool": "get_usage_trend",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2025.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "URGENT (by 2026-11-08): Escalate the two open tickets \u2014 T-0284 (P1, in-play latency spike) and T-0279 (P2, missing live events) \u2014 to engineering leadership and provide Halden with a written resolution timeline before any renewal conversation.",
+      "numeric_values": [],
+      "citations": [
+        "T-0284",
+        "T-0279"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-284.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-279.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-8.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Prepare renewal options before the notice deadline of 2026-12-02 (31 days away), as committed in the Oct 7 meeting. Options should include a reduced in-play scope tier alongside a full-scope option with SLA guarantees and latency improvement commitments.",
+      "numeric_values": [
+        31
+      ],
+      "citations": [
+        "N-003",
+        "K-0002"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2026.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-12.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-2.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "7.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Request a meeting with the head of trading and CTO within the next 2 weeks to present a remediation plan for ODDS_LIVE latency, share the in-play latency improvement roadmap (originally committed in Nov 2025 QBR), and discuss streaming expansion for lower leagues.",
+      "numeric_values": [],
+      "citations": [
+        "N-001",
+        "N-003",
+        "N-002"
+      ],
+      "source_tool": "get_meeting_notes",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "2025.0 in claim text but not in numeric_values or tool output"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "next_steps",
+      "claim": "Assess whether SLA service credits are owed for the documented latency and outage incidents (35-minute feed outage T-0255, repeated above-threshold latency T-0269). Proactively offering credits could rebuild trust before the renewal negotiation.",
+      "numeric_values": [
+        35
+      ],
+      "citations": [
+        "T-0255",
+        "T-0269",
+        "N-002"
+      ],
+      "source_tool": "get_support_summary",
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "hallucinated",
+          "detail": "-255.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "hallucinated",
+          "detail": "-269.0 in claim text but not in numeric_values or tool output"
+        },
+        {
+          "type": "llm_computed",
+          "detail": "35 not in tool output \u2014 appears to be 4 - -31.0 = 35"
+        }
+      ],
+      "flag_reason": "no source found"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "3 closed support tickets have no CSAT score recorded, so the actual CSAT of 2.22 is based on only 9 of 12 tickets and may not fully represent client sentiment.",
+      "numeric_values": [
+        3,
+        2.22,
+        9,
+        12
+      ],
+      "citations": [],
+      "source_tool": "check_data_quality",
+      "_empty_citations": true,
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "missing_citation",
+          "detail": "claim has numeric values but no citations"
+        }
+      ],
+      "flag_reason": "citation not in evidence"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "No prior-window CSAT data is available, so it is not possible to quantify CSAT trend direction \u2014 only the current average of 2.22 is known.",
+      "numeric_values": [
+        2.22
+      ],
+      "citations": [],
+      "source_tool": "get_support_summary",
+      "_empty_citations": true,
+      "verification": "flagged",
+      "verification_issues": [
+        {
+          "type": "missing_citation",
+          "detail": "claim has numeric values but no citations"
+        }
+      ],
+      "flag_reason": "citation not in evidence"
+    },
+    {
+      "section": "data_gaps",
+      "claim": "No opportunity pipeline data was returned, so it is unknown whether any upsell or renewal opportunity has been formally logged in the CRM. Maya should ensure a renewal opportunity is created immediately given the 31-day notice deadline.",
+      "numeric_values": [
+        31
+      ],
+      "citations": [
+        "K-0002"
+      ],
+      "source_tool": "get_contract_status",
+      "verification": "passed"
+    }
+  ],
+  "tool_outputs": {
+    "get_client_profile": {
+      "data": {
+        "client_id": "C001",
+        "client_name": "Halden Bet",
+        "segment": "Sportsbook",
+        "country": "GB",
+        "account_owner": "Maya Lindgren",
+        "customer_since": "2021-02-01",
+        "tier": "Strategic"
+      },
+      "row_ids": [
+        "C001"
+      ]
+    },
+    "get_contract_status": {
+      "data": {
+        "active_contracts": [
+          {
+            "contract_id": "K-0002",
+            "contract_type": "renewal",
+            "start_date": "2025-02-01",
+            "end_date": "2027-01-31",
+            "days_to_end": 91,
+            "notice_deadline": "2026-12-02",
+            "days_until_notice": 31,
+            "notice_passed": false,
+            "auto_renew": "Y",
+            "arr_eur": 752000,
+            "products": [
+              {
+                "line_id": "L-00005",
+                "product_id": "LIVE_DATA",
+                "annual_fee_eur": 192000,
+                "included_units_monthly": 8000,
+                "overage_rate_eur": 6.0
+              },
+              {
+                "line_id": "L-00006",
+                "product_id": "ODDS_PRE",
+                "annual_fee_eur": 144000,
+                "included_units_monthly": 1280,
+                "overage_rate_eur": 40.0
+              },
+              {
+                "line_id": "L-00007",
+                "product_id": "ODDS_LIVE",
+                "annual_fee_eur": 240000,
+                "included_units_monthly": 1920,
+                "overage_rate_eur": 45.0
+              },
+              {
+                "line_id": "L-00008",
+                "product_id": "STREAM",
+                "annual_fee_eur": 176000,
+                "included_units_monthly": 960,
+                "overage_rate_eur": 55.0
+              }
+            ],
+            "prev_arr_eur": 692000,
+            "arr_change_pct": 8.7
+          }
+        ],
+        "pending_contracts": [],
+        "total_arr": 752000,
+        "has_active_contract": true
+      },
+      "row_ids": [
+        "K-0002",
+        "L-00005",
+        "L-00006",
+        "L-00007",
+        "L-00008"
+      ]
+    },
+    "get_usage_trend": {
+      "data": {
+        "products": {
+          "LIVE_DATA": {
+            "product_name": "Live Match Data Feed",
+            "usage_unit": "API calls (thousands)",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 7685.0,
+                "included_units": 8000.0,
+                "utilization_pct": 96.1,
+                "usage_id": "U-00001"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 8631.0,
+                "included_units": 8000.0,
+                "utilization_pct": 107.9,
+                "usage_id": "U-00005"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 7470.0,
+                "included_units": 8000.0,
+                "utilization_pct": 93.4,
+                "usage_id": "U-00009"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 7469.0,
+                "included_units": 8000.0,
+                "utilization_pct": 93.4,
+                "usage_id": "U-00013"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 8169.0,
+                "included_units": 8000.0,
+                "utilization_pct": 102.1,
+                "usage_id": "U-00017"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 8032.0,
+                "included_units": 8000.0,
+                "utilization_pct": 100.4,
+                "usage_id": "U-00021"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 7277.0,
+                "included_units": 8000.0,
+                "utilization_pct": 91.0,
+                "usage_id": "U-00025"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 5623.0,
+                "included_units": 8000.0,
+                "utilization_pct": 70.3,
+                "usage_id": "U-00029"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 5614.0,
+                "included_units": 8000.0,
+                "utilization_pct": 70.2,
+                "usage_id": "U-00033"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 6952.0,
+                "included_units": 8000.0,
+                "utilization_pct": 86.9,
+                "usage_id": "U-00037"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 8009.0,
+                "included_units": 8000.0,
+                "utilization_pct": 100.1,
+                "usage_id": "U-00041"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 7433.0,
+                "included_units": 8000.0,
+                "utilization_pct": 92.9,
+                "usage_id": "U-00045"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 7902.0,
+                "included_units": 8000.0,
+                "utilization_pct": 98.8,
+                "usage_id": "U-00049"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 8038.0,
+                "included_units": 8000.0,
+                "utilization_pct": 100.5,
+                "usage_id": "U-00053"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 7787.0,
+                "included_units": 8000.0,
+                "utilization_pct": 97.3,
+                "usage_id": "U-00057"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 7466.0,
+                "included_units": 8000.0,
+                "utilization_pct": 93.3,
+                "usage_id": "U-00061"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 7658.0,
+                "included_units": 8000.0,
+                "utilization_pct": 95.7,
+                "usage_id": "U-00065"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 7289.0,
+                "included_units": 8000.0,
+                "utilization_pct": 91.1,
+                "usage_id": "U-00069"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 6382.0,
+                "included_units": 8000.0,
+                "utilization_pct": 79.8,
+                "usage_id": "U-00073"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 5112.0,
+                "included_units": 8000.0,
+                "utilization_pct": 63.9,
+                "usage_id": "U-00077"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 4299.0,
+                "included_units": 8000.0,
+                "utilization_pct": 53.7,
+                "usage_id": "U-00081"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 4962.0,
+                "included_units": 8000.0,
+                "utilization_pct": 62.0,
+                "usage_id": "U-00085"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 4883.0,
+                "included_units": 8000.0,
+                "utilization_pct": 61.0,
+                "usage_id": "U-00089"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 4422.0,
+                "included_units": 8000.0,
+                "utilization_pct": 55.3,
+                "usage_id": "U-00093"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": -26.5,
+            "recent_vs_prior_pct": -9.7,
+            "months_over_included": 5,
+            "over_included_months": [
+              "2024-12",
+              "2025-03",
+              "2025-04",
+              "2025-09",
+              "2025-12"
+            ],
+            "avg_utilization_pct": 62.6,
+            "data_gaps": []
+          },
+          "ODDS_LIVE": {
+            "product_name": "In-play Odds Feed",
+            "usage_unit": "markets priced (thousands)",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 1798.0,
+                "included_units": 1920.0,
+                "utilization_pct": 93.6,
+                "usage_id": "U-00002"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 2024.0,
+                "included_units": 1920.0,
+                "utilization_pct": 105.4,
+                "usage_id": "U-00006"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 2009.0,
+                "included_units": 1920.0,
+                "utilization_pct": 104.6,
+                "usage_id": "U-00010"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 2108.0,
+                "included_units": 1920.0,
+                "utilization_pct": 109.8,
+                "usage_id": "U-00014"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 2061.0,
+                "included_units": 1920.0,
+                "utilization_pct": 107.3,
+                "usage_id": "U-00018"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 1966.0,
+                "included_units": 1920.0,
+                "utilization_pct": 102.4,
+                "usage_id": "U-00022"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 1819.0,
+                "included_units": 1920.0,
+                "utilization_pct": 94.7,
+                "usage_id": "U-00026"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 1401.0,
+                "included_units": 1920.0,
+                "utilization_pct": 73.0,
+                "usage_id": "U-00030"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 1356.0,
+                "included_units": 1920.0,
+                "utilization_pct": 70.6,
+                "usage_id": "U-00034"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 1738.0,
+                "included_units": 1920.0,
+                "utilization_pct": 90.5,
+                "usage_id": "U-00038"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 1844.0,
+                "included_units": 1920.0,
+                "utilization_pct": 96.0,
+                "usage_id": "U-00042"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 1967.0,
+                "included_units": 1920.0,
+                "utilization_pct": 102.4,
+                "usage_id": "U-00046"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 1988.0,
+                "included_units": 1920.0,
+                "utilization_pct": 103.5,
+                "usage_id": "U-00050"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 2151.0,
+                "included_units": 1920.0,
+                "utilization_pct": 112.0,
+                "usage_id": "U-00054"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 1961.0,
+                "included_units": 1920.0,
+                "utilization_pct": 102.1,
+                "usage_id": "U-00058"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 1972.0,
+                "included_units": 1920.0,
+                "utilization_pct": 102.7,
+                "usage_id": "U-00062"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 2001.0,
+                "included_units": 1920.0,
+                "utilization_pct": 104.2,
+                "usage_id": "U-00066"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 1843.0,
+                "included_units": 1920.0,
+                "utilization_pct": 96.0,
+                "usage_id": "U-00070"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 1551.0,
+                "included_units": 1920.0,
+                "utilization_pct": 80.8,
+                "usage_id": "U-00074"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 1122.0,
+                "included_units": 1920.0,
+                "utilization_pct": 58.4,
+                "usage_id": "U-00078"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 979.0,
+                "included_units": 1920.0,
+                "utilization_pct": 51.0,
+                "usage_id": "U-00082"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 1170.0,
+                "included_units": 1920.0,
+                "utilization_pct": 60.9,
+                "usage_id": "U-00086"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 1170.0,
+                "included_units": 1920.0,
+                "utilization_pct": 60.9,
+                "usage_id": "U-00090"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 991.0,
+                "included_units": 1920.0,
+                "utilization_pct": 51.6,
+                "usage_id": "U-00094"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": -31.0,
+            "recent_vs_prior_pct": -8.8,
+            "months_over_included": 11,
+            "over_included_months": [
+              "2024-12",
+              "2025-01",
+              "2025-02",
+              "2025-03",
+              "2025-04",
+              "2025-10",
+              "2025-11",
+              "2025-12",
+              "2026-01",
+              "2026-02",
+              "2026-03"
+            ],
+            "avg_utilization_pct": 60.6,
+            "data_gaps": []
+          },
+          "ODDS_PRE": {
+            "product_name": "Pre-match Odds Feed",
+            "usage_unit": "markets priced (thousands)",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 1102.0,
+                "included_units": 1280.0,
+                "utilization_pct": 86.1,
+                "usage_id": "U-00003"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 1172.0,
+                "included_units": 1280.0,
+                "utilization_pct": 91.6,
+                "usage_id": "U-00007"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 1123.0,
+                "included_units": 1280.0,
+                "utilization_pct": 87.7,
+                "usage_id": "U-00011"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 1099.0,
+                "included_units": 1280.0,
+                "utilization_pct": 85.9,
+                "usage_id": "U-00015"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 1156.0,
+                "included_units": 1280.0,
+                "utilization_pct": 90.3,
+                "usage_id": "U-00019"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 1074.0,
+                "included_units": 1280.0,
+                "utilization_pct": 83.9,
+                "usage_id": "U-00023"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 1011.0,
+                "included_units": 1280.0,
+                "utilization_pct": 79.0,
+                "usage_id": "U-00027"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 836.0,
+                "included_units": 1280.0,
+                "utilization_pct": 65.3,
+                "usage_id": "U-00031"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 834.0,
+                "included_units": 1280.0,
+                "utilization_pct": 65.2,
+                "usage_id": "U-00035"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 1054.0,
+                "included_units": 1280.0,
+                "utilization_pct": 82.3,
+                "usage_id": "U-00039"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 1176.0,
+                "included_units": 1280.0,
+                "utilization_pct": 91.9,
+                "usage_id": "U-00043"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 1086.0,
+                "included_units": 1280.0,
+                "utilization_pct": 84.8,
+                "usage_id": "U-00047"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 1058.0,
+                "included_units": 1280.0,
+                "utilization_pct": 82.7,
+                "usage_id": "U-00051"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 1194.0,
+                "included_units": 1280.0,
+                "utilization_pct": 93.3,
+                "usage_id": "U-00055"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 1241.0,
+                "included_units": 1280.0,
+                "utilization_pct": 97.0,
+                "usage_id": "U-00059"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 1130.0,
+                "included_units": 1280.0,
+                "utilization_pct": 88.3,
+                "usage_id": "U-00063"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 1171.0,
+                "included_units": 1280.0,
+                "utilization_pct": 91.5,
+                "usage_id": "U-00067"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 1135.0,
+                "included_units": 1280.0,
+                "utilization_pct": 88.7,
+                "usage_id": "U-00071"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 1022.0,
+                "included_units": 1280.0,
+                "utilization_pct": 79.8,
+                "usage_id": "U-00075"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 834.0,
+                "included_units": 1280.0,
+                "utilization_pct": 65.2,
+                "usage_id": "U-00079"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 782.0,
+                "included_units": 1280.0,
+                "utilization_pct": 61.1,
+                "usage_id": "U-00083"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 988.0,
+                "included_units": 1280.0,
+                "utilization_pct": 77.2,
+                "usage_id": "U-00087"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 1139.0,
+                "included_units": 1280.0,
+                "utilization_pct": 89.0,
+                "usage_id": "U-00091"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 1149.0,
+                "included_units": 1280.0,
+                "utilization_pct": 89.8,
+                "usage_id": "U-00095"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": -1.4,
+            "recent_vs_prior_pct": 24.2,
+            "months_over_included": 0,
+            "over_included_months": [],
+            "avg_utilization_pct": 77.0,
+            "data_gaps": []
+          },
+          "STREAM": {
+            "product_name": "Live Streaming",
+            "usage_unit": "streamed hours",
+            "monthly": [
+              {
+                "month": "2024-11",
+                "units_used": 657.0,
+                "included_units": 960.0,
+                "utilization_pct": 68.4,
+                "usage_id": "U-00004"
+              },
+              {
+                "month": "2024-12",
+                "units_used": 721.0,
+                "included_units": 960.0,
+                "utilization_pct": 75.1,
+                "usage_id": "U-00008"
+              },
+              {
+                "month": "2025-01",
+                "units_used": 626.0,
+                "included_units": 960.0,
+                "utilization_pct": 65.2,
+                "usage_id": "U-00012"
+              },
+              {
+                "month": "2025-02",
+                "units_used": 656.0,
+                "included_units": 960.0,
+                "utilization_pct": 68.3,
+                "usage_id": "U-00016"
+              },
+              {
+                "month": "2025-03",
+                "units_used": 664.0,
+                "included_units": 960.0,
+                "utilization_pct": 69.2,
+                "usage_id": "U-00020"
+              },
+              {
+                "month": "2025-04",
+                "units_used": 617.0,
+                "included_units": 960.0,
+                "utilization_pct": 64.3,
+                "usage_id": "U-00024"
+              },
+              {
+                "month": "2025-05",
+                "units_used": 566.0,
+                "included_units": 960.0,
+                "utilization_pct": 59.0,
+                "usage_id": "U-00028"
+              },
+              {
+                "month": "2025-06",
+                "units_used": 468.0,
+                "included_units": 960.0,
+                "utilization_pct": 48.8,
+                "usage_id": "U-00032"
+              },
+              {
+                "month": "2025-07",
+                "units_used": 438.0,
+                "included_units": 960.0,
+                "utilization_pct": 45.6,
+                "usage_id": "U-00036"
+              },
+              {
+                "month": "2025-08",
+                "units_used": 597.0,
+                "included_units": 960.0,
+                "utilization_pct": 62.2,
+                "usage_id": "U-00040"
+              },
+              {
+                "month": "2025-09",
+                "units_used": 567.0,
+                "included_units": 960.0,
+                "utilization_pct": 59.1,
+                "usage_id": "U-00044"
+              },
+              {
+                "month": "2025-10",
+                "units_used": 608.0,
+                "included_units": 960.0,
+                "utilization_pct": 63.3,
+                "usage_id": "U-00048"
+              },
+              {
+                "month": "2025-11",
+                "units_used": 615.0,
+                "included_units": 960.0,
+                "utilization_pct": 64.1,
+                "usage_id": "U-00052"
+              },
+              {
+                "month": "2025-12",
+                "units_used": 632.0,
+                "included_units": 960.0,
+                "utilization_pct": 65.8,
+                "usage_id": "U-00056"
+              },
+              {
+                "month": "2026-01",
+                "units_used": 588.0,
+                "included_units": 960.0,
+                "utilization_pct": 61.3,
+                "usage_id": "U-00060"
+              },
+              {
+                "month": "2026-02",
+                "units_used": 551.0,
+                "included_units": 960.0,
+                "utilization_pct": 57.4,
+                "usage_id": "U-00064"
+              },
+              {
+                "month": "2026-03",
+                "units_used": 607.0,
+                "included_units": 960.0,
+                "utilization_pct": 63.2,
+                "usage_id": "U-00068"
+              },
+              {
+                "month": "2026-04",
+                "units_used": 585.0,
+                "included_units": 960.0,
+                "utilization_pct": 60.9,
+                "usage_id": "U-00072"
+              },
+              {
+                "month": "2026-05",
+                "units_used": 510.0,
+                "included_units": 960.0,
+                "utilization_pct": 53.1,
+                "usage_id": "U-00076"
+              },
+              {
+                "month": "2026-06",
+                "units_used": 421.0,
+                "included_units": 960.0,
+                "utilization_pct": 43.9,
+                "usage_id": "U-00080"
+              },
+              {
+                "month": "2026-07",
+                "units_used": 369.0,
+                "included_units": 960.0,
+                "utilization_pct": 38.4,
+                "usage_id": "U-00084"
+              },
+              {
+                "month": "2026-08",
+                "units_used": 497.0,
+                "included_units": 960.0,
+                "utilization_pct": 51.8,
+                "usage_id": "U-00088"
+              },
+              {
+                "month": "2026-09",
+                "units_used": 563.0,
+                "included_units": 960.0,
+                "utilization_pct": 58.6,
+                "usage_id": "U-00092"
+              },
+              {
+                "month": "2026-10",
+                "units_used": 541.0,
+                "included_units": 960.0,
+                "utilization_pct": 56.4,
+                "usage_id": "U-00096"
+              }
+            ],
+            "months_of_data": 24,
+            "yoy_change_pct": -10.6,
+            "recent_vs_prior_pct": 23.2,
+            "months_over_included": 0,
+            "over_included_months": [],
+            "avg_utilization_pct": 50.4,
+            "data_gaps": []
+          }
+        }
+      },
+      "row_ids": [
+        "U-00001",
+        "U-00005",
+        "U-00009",
+        "U-00013",
+        "U-00017",
+        "U-00021",
+        "U-00025",
+        "U-00029",
+        "U-00033",
+        "U-00037",
+        "U-00041",
+        "U-00045",
+        "U-00049",
+        "U-00053",
+        "U-00057",
+        "U-00061",
+        "U-00065",
+        "U-00069",
+        "U-00073",
+        "U-00077",
+        "U-00081",
+        "U-00085",
+        "U-00089",
+        "U-00093",
+        "U-00002",
+        "U-00006",
+        "U-00010",
+        "U-00014",
+        "U-00018",
+        "U-00022",
+        "U-00026",
+        "U-00030",
+        "U-00034",
+        "U-00038",
+        "U-00042",
+        "U-00046",
+        "U-00050",
+        "U-00054",
+        "U-00058",
+        "U-00062",
+        "U-00066",
+        "U-00070",
+        "U-00074",
+        "U-00078",
+        "U-00082",
+        "U-00086",
+        "U-00090",
+        "U-00094",
+        "U-00003",
+        "U-00007",
+        "U-00011",
+        "U-00015",
+        "U-00019",
+        "U-00023",
+        "U-00027",
+        "U-00031",
+        "U-00035",
+        "U-00039",
+        "U-00043",
+        "U-00047",
+        "U-00051",
+        "U-00055",
+        "U-00059",
+        "U-00063",
+        "U-00067",
+        "U-00071",
+        "U-00075",
+        "U-00079",
+        "U-00083",
+        "U-00087",
+        "U-00091",
+        "U-00095",
+        "U-00004",
+        "U-00008",
+        "U-00012",
+        "U-00016",
+        "U-00020",
+        "U-00024",
+        "U-00028",
+        "U-00032",
+        "U-00036",
+        "U-00040",
+        "U-00044",
+        "U-00048",
+        "U-00052",
+        "U-00056",
+        "U-00060",
+        "U-00064",
+        "U-00068",
+        "U-00072",
+        "U-00076",
+        "U-00080",
+        "U-00084",
+        "U-00088",
+        "U-00092",
+        "U-00096"
+      ]
+    },
+    "get_support_summary": {
+      "data": {
+        "window": {
+          "start": "2025-11-01",
+          "end": "2026-11-01",
+          "days": 365
+        },
+        "total_tickets": 12,
+        "by_priority": {
+          "P1": 5,
+          "P2": 6,
+          "P3": 1
+        },
+        "by_category": {
+          "Integration": 1,
+          "Feature request": 1,
+          "Access": 1,
+          "Latency": 5,
+          "Data accuracy": 2,
+          "Outage": 1,
+          "Billing": 1
+        },
+        "prev_window_total": 2,
+        "prev_by_priority": {
+          "P3": 2
+        },
+        "ticket_change_abs": 10,
+        "change_pct": 500.0,
+        "open_tickets": [
+          {
+            "ticket_id": "T-0279",
+            "priority": "P2",
+            "category": "Data accuracy",
+            "subject": "Missing corner and card events in live feed",
+            "product_id": "LIVE_DATA",
+            "opened_date": "2026-10-12"
+          },
+          {
+            "ticket_id": "T-0284",
+            "priority": "P1",
+            "category": "Latency",
+            "subject": "In-play latency spike during evening fixtures",
+            "product_id": "ODDS_LIVE",
+            "opened_date": "2026-10-21"
+          }
+        ],
+        "avg_csat": 2.22,
+        "csat_response_rate": 90.0,
+        "csat_responses": 9,
+        "prev_avg_csat": null,
+        "csat_change": null,
+        "notable_tickets": [
+          {
+            "ticket_id": "T-0151",
+            "priority": "P1",
+            "category": "Integration",
+            "subject": "SDK version upgrade question",
+            "product_id": "LIVE_DATA",
+            "status": "closed",
+            "csat_score": 5
+          },
+          {
+            "ticket_id": "T-0169",
+            "priority": "P2",
+            "category": "Feature request",
+            "subject": "Ask about custom alert thresholds",
+            "product_id": "ODDS_PRE",
+            "status": "closed",
+            "csat_score": 3
+          },
+          {
+            "ticket_id": "T-0203",
+            "priority": "P2",
+            "category": "Access",
+            "subject": "Reset API key",
+            "product_id": "ODDS_LIVE",
+            "status": "closed",
+            "csat_score": 3
+          },
+          {
+            "ticket_id": "T-0237",
+            "priority": "P2",
+            "category": "Latency",
+            "subject": "In-play price updates lagging 8-10 seconds",
+            "product_id": "ODDS_LIVE",
+            "status": "closed",
+            "csat_score": 2
+          },
+          {
+            "ticket_id": "T-0242",
+            "priority": "P2",
+            "category": "Data accuracy",
+            "subject": "Delayed goal events on second-tier leagues",
+            "product_id": "LIVE_DATA",
+            "status": "closed",
+            "csat_score": 2
+          },
+          {
+            "ticket_id": "T-0249",
+            "priority": "P1",
+            "category": "Latency",
+            "subject": "In-play odds feed stalled during peak fixtures",
+            "product_id": "ODDS_LIVE",
+            "status": "closed",
+            "csat_score": 1
+          },
+          {
+            "ticket_id": "T-0255",
+            "priority": "P1",
+            "category": "Outage",
+            "subject": "In-play feed unavailable for 35 minutes",
+            "product_id": "ODDS_LIVE",
+            "status": "closed",
+            "csat_score": 1
+          },
+          {
+            "ticket_id": "T-0259",
+            "priority": "P3",
+            "category": "Billing",
+            "subject": "Query on price increase applied at last renewal",
+            "product_id": "LIVE_DATA",
+            "status": "closed",
+            "csat_score": 2
+          },
+          {
+            "ticket_id": "T-0269",
+            "priority": "P1",
+            "category": "Latency",
+            "subject": "Repeat: in-play latency above contractual threshold",
+            "product_id": "ODDS_LIVE",
+            "status": "closed",
+            "csat_score": 1
+          },
+          {
+            "ticket_id": "T-0273",
+            "priority": "P2",
+            "category": "Latency",
+            "subject": "Suspension delays on live markets",
+            "product_id": "ODDS_LIVE",
+            "status": "closed",
+            "csat_score": null
+          },
+          {
+            "ticket_id": "T-0279",
+            "priority": "P2",
+            "category": "Data accuracy",
+            "subject": "Missing corner and card events in live feed",
+            "product_id": "LIVE_DATA",
+            "status": "open",
+            "csat_score": null
+          },
+          {
+            "ticket_id": "T-0284",
+            "priority": "P1",
+            "category": "Latency",
+            "subject": "In-play latency spike during evening fixtures",
+            "product_id": "ODDS_LIVE",
+            "status": "open",
+            "csat_score": null
+          }
+        ]
+      },
+      "row_ids": [
+        "T-0151",
+        "T-0169",
+        "T-0203",
+        "T-0237",
+        "T-0242",
+        "T-0249",
+        "T-0255",
+        "T-0259",
+        "T-0269",
+        "T-0273",
+        "T-0279",
+        "T-0284"
+      ]
+    },
+    "get_meeting_notes": {
+      "data": {
+        "notes": [
+          {
+            "note_id": "N-003",
+            "client_id": "C001",
+            "meeting_date": "2026-10-07",
+            "author": "Maya Lindgren",
+            "title": "Renewal pre-discussion",
+            "body": "# Renewal pre-discussion: Halden Bet\n\nDate: 2026-10-07\nAuthor: Maya Lindgren\n\nAttendees: Halden head of trading, Halden procurement, Maya Lindgren.\n\n- Head of trading mentioned they are trialling another in-play odds supplier \"for two leagues\" since the summer.\n- Procurement wants pricing for a reduced in-play scope at renewal. Budget pressure from their finance team.\n- Still positive about the live data feed and pre-match odds.\n\nActions: Maya to prepare renewal options before notice date.\n"
+          },
+          {
+            "note_id": "N-002",
+            "client_id": "C001",
+            "meeting_date": "2026-06-12",
+            "author": "Maya Lindgren",
+            "title": "Service call",
+            "body": "# Service call: Halden\n\nDate: 2026-06-12\nAuthor: Maya Lindgren\n\nAttendees: Halden trading operations lead, Maya Lindgren, solutions engineer.\n\n- Complaints about in-play price delays during the busy June fixtures. They say traders suspended markets manually several times.\n- Asked for a written explanation and service credits.\n- Tone noticeably cooler than last quarter.\n\nActions: solutions engineer to send incident summary; Maya to check SLA credit terms.\n"
+          },
+          {
+            "note_id": "N-001",
+            "client_id": "C001",
+            "meeting_date": "2025-11-20",
+            "author": "Maya Lindgren",
+            "title": "Quarterly review",
+            "body": "# Quarterly review: Halden Bet plc\n\nDate: 2025-11-20\nAuthor: Maya Lindgren\n\nAttendees: Halden head of trading, Halden CTO, Maya Lindgren (account owner).\n\n- Good quarter overall. Trading team happy with in-play coverage and pre-match pricing.\n- They raised the price increase at the last renewal again but accepted it \"for now\".\n- Interest in more streaming for lower leagues next year, nothing concrete.\n\nActions: Maya to share roadmap for in-play latency improvements.\n"
+          }
+        ],
+        "count": 3
+      },
+      "row_ids": [
+        "N-003",
+        "N-002",
+        "N-001"
+      ]
+    },
+    "get_peer_comparison": {
+      "data": {
+        "segment": "Sportsbook",
+        "this_client": {
+          "client_id": "C001",
+          "client_name": "Halden Bet",
+          "tier": "Strategic",
+          "total_arr": 752000,
+          "product_count": 4,
+          "avg_utilization_pct": 64.5
+        },
+        "peer_count": 5,
+        "segment_avg_arr": 499500,
+        "segment_min_arr": 105000,
+        "segment_max_arr": 752000,
+        "segment_avg_products": 4.0,
+        "segment_avg_utilization": 86.1,
+        "arr_rank": 1,
+        "arr_rank_of": 6,
+        "peers": [
+          {
+            "client_id": "C009",
+            "client_name": "Pellucid Odds",
+            "tier": "Strategic",
+            "total_arr": 564000,
+            "product_count": 5,
+            "avg_utilization_pct": 103.8
+          },
+          {
+            "client_id": "C010",
+            "client_name": "Saltmarsh Gaming",
+            "tier": "Core",
+            "total_arr": 470000,
+            "product_count": 4,
+            "avg_utilization_pct": 93.5
+          },
+          {
+            "client_id": "C012",
+            "client_name": "Redfern Wagers",
+            "tier": "Growth",
+            "total_arr": 105000,
+            "product_count": 2,
+            "avg_utilization_pct": 86.3
+          },
+          {
+            "client_id": "C016",
+            "client_name": "Velmont Casino & Sport",
+            "tier": "Core",
+            "total_arr": 378000,
+            "product_count": 4,
+            "avg_utilization_pct": 80.4
+          },
+          {
+            "client_id": "C024",
+            "client_name": "Novaterra Bet",
+            "tier": "Strategic",
+            "total_arr": 728000,
+            "product_count": 5,
+            "avg_utilization_pct": 88.4
+          }
+        ]
+      },
+      "row_ids": [
+        "C001",
+        "C009",
+        "C010",
+        "C012",
+        "C016",
+        "C024"
+      ]
+    },
+    "check_data_quality": {
+      "data": {
+        "issues": [
+          {
+            "type": "blank_csat",
+            "detail": "3 closed tickets have no CSAT score"
+          }
+        ],
+        "issue_count": 1
+      },
+      "row_ids": []
+    }
+  }
+}

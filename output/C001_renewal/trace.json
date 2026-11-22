@@ -1,0 +1,42 @@
+{
+  "client_id": "C001",
+  "trigger": "renewal",
+  "steps": [
+    {
+      "step": "plan",
+      "elapsed_s": 2.219,
+      "detail": null
+    },
+    {
+      "step": "tools",
+      "elapsed_s": 0.013,
+      "detail": "7 tools"
+    },
+    {
+      "step": "write",
+      "elapsed_s": 74.439,
+      "detail": "32 claims"
+    },
+    {
+      "step": "verify",
+      "elapsed_s": 0.004,
+      "detail": "11 passed, 21 flagged"
+    },
+    {
+      "step": "render",
+      "elapsed_s": 0.0,
+      "detail": null
+    },
+    {
+      "step": "judge",
+      "elapsed_s": 16.433,
+      "detail": "overall: 5/5"
+    }
+  ],
+  "total_elapsed_s": 93.117,
+  "llm_calls": 3,
+  "claims_total": 32,
+  "claims_passed": 11,
+  "claims_flagged": 21,
+  "judge_overall": 5
+}

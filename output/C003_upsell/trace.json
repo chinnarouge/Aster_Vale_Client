@@ -1,0 +1,42 @@
+{
+  "client_id": "C003",
+  "trigger": "upsell",
+  "steps": [
+    {
+      "step": "plan",
+      "elapsed_s": 2.299,
+      "detail": null
+    },
+    {
+      "step": "tools",
+      "elapsed_s": 0.015,
+      "detail": "7 tools"
+    },
+    {
+      "step": "write",
+      "elapsed_s": 49.384,
+      "detail": "24 claims"
+    },
+    {
+      "step": "verify",
+      "elapsed_s": 0.003,
+      "detail": "10 passed, 14 flagged"
+    },
+    {
+      "step": "render",
+      "elapsed_s": 0.0,
+      "detail": null
+    },
+    {
+      "step": "judge",
+      "elapsed_s": 15.744,
+      "detail": "overall: 5/5"
+    }
+  ],
+  "total_elapsed_s": 67.452,
+  "llm_calls": 3,
+  "claims_total": 24,
+  "claims_passed": 10,
+  "claims_flagged": 14,
+  "judge_overall": 5
+}

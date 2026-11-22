@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "Thoroughly covers all renewal-relevant dimensions: contract status, usage trends per product, opportunity details, support health, relationship context, whitespace analysis, risks, and recommended next steps. The notice deadline lapse and auto-renew status are prominently highlighted."
+  },
+  "accuracy": {
+    "score": 5,
+    "comment": "Claims are consistently grounded in cited evidence with specific record IDs. The briefing proactively identifies and flags the conflict between the client's claim of streaming usage being 'up massively' and the actual -24.2% YoY decline. Items marked [UNVERIFIED] are appropriately flagged. Calculations (utilization percentages, YoY changes) are consistent with the data points cited."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Next steps are specific, prioritized, and directly tied to the renewal context: investigate the STREAM usage discrepancy before the board meeting, push for signature by mid-December, prepare right-sizing or multi-year deal options, proactively address the mobile buffering issue, and explore FAN_INSIGHTS adoption or reallocation. Each recommendation is linked to a concrete business rationale and evidence."
+  },
+  "data_transparency": {
+    "score": 5,
+    "comment": "Explicitly flags three data gaps: missing prev_arr_eur/arr_change_pct, low CSAT response rate (7/10) with notable P2 tickets unscored, and absence of rep context. The STREAM usage vs. client perception conflict is called out prominently with a clear recommendation to investigate. UNVERIFIED tags are used appropriately."
+  },
+  "overall": 5,
+  "summary": "An exemplary renewal briefing that is comprehensive, evidence-grounded, and highly actionable, with excellent transparency about data conflicts and gaps \u2014 particularly the critical STREAM usage discrepancy and the contract lapse risk with no auto-renew."
+}

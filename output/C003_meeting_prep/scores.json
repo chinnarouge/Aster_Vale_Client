@@ -1,0 +1,20 @@
+{
+  "completeness": {
+    "score": 5,
+    "comment": "Covers all meeting_prep dimensions thoroughly: contract status, renewal timeline, usage trends across all 4 products, support health, relationship context, risks, growth opportunities, and concrete next steps. The headline immediately surfaces the most critical information."
+  },
+  "accuracy": {
+    "score": 4,
+    "comment": "Claims are well-sourced with specific record IDs and cross-referenced (e.g., the ~+10% increase from N-006 is validated against the O-0003 amount vs. current ARR). The streaming usage conflict between client perception and YoY data is correctly identified and contextualized. Minor concern: many items marked UNVERIFIED despite having specific source IDs, which may indicate over-cautious tagging rather than actual accuracy issues. The CSAT math (9 tickets with no score but 7 responses out of 10) has a minor inconsistency \u2014 if 7 responded, only 3 lack scores, not 9."
+  },
+  "actionability": {
+    "score": 5,
+    "comment": "Next steps are specific, prioritized, and time-bound. Each recommendation ties directly to a risk or opportunity: confirm paperwork sent, track board approval timeline, address mobile buffering quality, discuss streaming tier upsell. The rep is armed with specific talking points and prepared for potential objections (YoY usage decline vs. client's positive perception)."
+  },
+  "data_transparency": {
+    "score": 5,
+    "comment": "Excellent transparency throughout. Explicitly flags the YoY vs. QoQ usage conflict for streaming, notes missing prev_arr data, calls out limited CSAT response rate (70%), and labels LLM-computed values. The UNVERIFIED tags are applied liberally \u2014 perhaps too liberally \u2014 but erring on the side of caution is appropriate. The Data Gaps section clearly articulates what cannot be assessed and why."
+  },
+  "overall": 5,
+  "summary": "An exemplary meeting prep briefing that surfaces the critical 60-day contract lapse risk, identifies a nuanced usage data conflict the rep must navigate, and provides highly actionable next steps \u2014 with only a minor CSAT calculation inconsistency detracting from otherwise strong accuracy."
+}
