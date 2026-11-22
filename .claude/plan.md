@@ -135,7 +135,7 @@ Why not langchain/langgraph: the chain is linear. Plan, run tools, write, verify
 | T3 | Stack | Python 3.12 + uv, stdlib `sqlite3`, stdlib `argparse`, Claude Opus 4.6 on Anthropic Foundry, Streamlit for UI. Plain Python validation (no pydantic — 10 lines of validation doesn't justify a dependency). |
 | T4 | Planner approach | **Free-flow reasoning.** No hardcoded per-trigger tool lists. Planner sees tool descriptions and reasons about which are relevant. Generalizes to unknown triggers without code changes (interview-ready). `check_data_quality` always forced in Python. |
 | T5 | Writer input | **Summarized tool data.** Raw tool outputs are trimmed before sending to the writer — drop full monthly arrays, keep computed stats + row_ids. Cuts input tokens ~80%, full data stays in evidence.json. |
-| T6 | Stretch goals | Judge always runs (3 LLM calls per run). Streamlit UI. Evaluation suite with 2 layers. Tracing with per-step timing, LLM token counts and cost. Playwright browser tests. |
+| T6 | Stretch goals | Judge always runs (3 LLM calls normally, 5 with retry). Streamlit UI. Evaluation suite with 3 layers (unit tests, facts, full pipeline). Tracing with per-step timing, LLM token counts and cost. 27 unit tests across 4 data shapes. |
 
 ### Data flow
 
@@ -262,7 +262,7 @@ All in one file (`tools.py`). They share three dedup CTEs and a common `_query` 
 | # | Tool | What it returns | Computed fields |
 | --- | --- | --- | --- |
 | 1 | `resolve_client` | client_id, name, confidence level | — |
-| 2 | `get_client_profile` | segment, tier, tenure, country, account owner | — |
+| 2 | `get_client_profile` | segment, tier, tenure, country, account owner | `tenure_years` |
 | 3 | `get_contract_status` | ARR, dates, notice deadline, products held | `days_until_notice`, `arr_change_pct` |
 | 4 | `get_usage_trend` | per-product monthly usage, YoY and sequential change | `yoy_change_pct`, `recent_vs_prior_pct`, `avg_utilization_pct` |
 | 5 | `get_whitespace` | products not held, peer adoption rates, segment fit | — |

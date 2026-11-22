@@ -29,7 +29,7 @@ Evaluated three approaches:
 
 - **Python 3.12** — assignment suggests Python
 - **anthropic SDK** — direct LLM calls, no wrapper
-- **pydantic** — input/output validation at boundaries (claim schema, tool envelopes)
+- **Plain Python validation** — 10 lines of key checks, no pydantic dependency needed
 - **uv** — fast dependency management, clean `pyproject.toml`
 - **Streamlit** — thin UI, stretch goal from assignment brief
 - **stdlib sqlite3** — read-only analytics against provided client_intel.db, no ORM needed
@@ -39,11 +39,11 @@ Evaluated three approaches:
 
 ### LLM call budget
 
-Three calls max, each with a clear job:
+Three calls normally, up to 5 if the judge triggers a retry:
 
-1. **Planner (LLM call 1):** receives client profile, trigger, rep context, tool descriptions. Returns JSON array of tool names. Has default suggestions per trigger but adjusts based on context. check_data_quality always included as a guardrail.
+1. **Planner (LLM call 1):** receives client profile, trigger, rep context, tool descriptions. Returns JSON array of tool names. Free-flow reasoning, no hardcoded per-trigger lists. check_data_quality always included as a guardrail.
 2. **Writer (LLM call 2):** receives all tool outputs with row IDs. Returns JSON array of structured claims. Key rule: every number must come from tool output, never calculate or estimate.
-3. **Judge (LLM call 3, optional):** scores briefing on completeness, accuracy, actionability, data transparency. For evaluation only, not production. Stretch goal.
+3. **Judge (LLM call 3):** scores briefing on completeness, accuracy, actionability, data transparency. If any dimension < 3, triggers one writer retry with feedback (LLM calls 4+5).
 
 ### Verifier design
 
@@ -282,12 +282,13 @@ Outputs structured JSON claims, not markdown prose. Each claim has section, stat
 
 ### Eval suite
 
-- Created `eval/cases.yaml`: 6 test cases (C001 at_risk, C001 renewal, C003 upsell, C003 meeting_prep, C004 at_risk, C004 renewal)
-- Created `eval/run_eval.py` with two layers:
-  - Layer 1 (free, no LLM): 33 expected facts from cases.yaml vs actual tool outputs. Validates tool correctness.
+- Created `eval/cases.yaml`: 6 test cases across 3 clients (C002, C009, C017) and all 4 triggers
+- Created `eval/run_eval.py` with three layers:
+  - Layer 0 (pytest): 27 unit tests run first, fail fast before spending tokens
+  - Layer 1 (free, no LLM): 30 expected facts from cases.yaml vs actual tool outputs. Validates tool correctness.
   - Layer 2 (`--full`, costs money): full pipeline + `ungrounded_check()` scans rendered briefing for numbers not in any tool output
   - `--report` writes `eval/report.md` with pass/fail tables and failure details
-- Layer 1 passes: all 33 facts match across 6 cases
+- Layer 1 passes: all 30 facts match across 6 cases
 - Added pyyaml to dependencies
 
 ### Verification and determinism hardening

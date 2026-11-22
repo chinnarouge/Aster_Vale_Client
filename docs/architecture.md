@@ -173,7 +173,7 @@ Before verification, every claim from the LLM is validated in Python. Required k
 
 Two interfaces, same pipeline:
 
-- **CLI** (`main.py`): `python Aster_business_analyst/main.py --client "C001" --trigger renewal`
+- **CLI** (`main.py`): `uv run Aster_business_analyst/main.py --client "Corvane Media" --trigger renewal`
 - **Streamlit** (`app.py`): `streamlit run Aster_business_analyst/app.py`
 
 Both call the same functions in the same order. Neither holds business logic. The UI adds a form and expandable evidence/claims/scores sections, nothing else.

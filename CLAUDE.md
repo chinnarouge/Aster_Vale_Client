@@ -47,7 +47,6 @@ Aster_business_analyst/
   app.py         — Streamlit UI
 tests/
   test_tools.py        — 27 unit tests, 4 data shapes, no LLM
-  test_streamlit_ui.py — Playwright headless browser tests
 eval/
   cases.yaml     — 6 test cases (3 clients x 2 triggers) with expected facts
   run_eval.py    — unit tests (layer 0) + layer 1 (free) + layer 2 (full pipeline)
